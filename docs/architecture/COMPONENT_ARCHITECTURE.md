@@ -157,356 +157,286 @@ For detailed information about the code organization, see the [Code Structure](.
 
 ### Translation Component
 
-#### Responsibilities
-- Translation management
-- File parsing
-- Content validation
-- Version control
-- Cache management
-
-#### Implementation
-```php
-class TranslationService
-{
-    public function __construct(
-        private readonly TranslationRepository $repository,
-        private readonly CacheInterface $cache,
-        private readonly EventDispatcherInterface $dispatcher
-    ) {}
-
-    public function getTranslation(string $id): ?Translation
-    {
-        $cacheKey = "translation:{$id}";
-        return $this->cache->get($cacheKey, fn() => $this->repository->find($id));
-    }
-
-    public function createTranslation(array $data): Translation
-    {
-        $translation = new Translation($data);
-        $this->repository->save($translation);
-        $this->cache->delete("translation:{$translation->getId()}");
-        $this->dispatcher->dispatch(new TranslationCreatedEvent($translation));
-        return $translation;
-    }
-}
+```mermaid
+graph TD
+    subgraph Translation
+        TM[Translation Manager] --> AM[Automatic Translation]
+        TM --> MM[Manual Translation]
+        TM --> QC[Quality Control]
+        TM --> VM[Version Management]
+        
+        AM --> DeepL[DeepL Provider]
+        AM --> Google[Google Provider]
+        AM --> MS[Microsoft Provider]
+        
+        MM --> Editor[Translation Editor]
+        MM --> Memory[Translation Memory]
+        MM --> Glossary[Glossary]
+        
+        QC --> Validator[Translation Validator]
+        QC --> Reviewer[Human Reviewer]
+        QC --> Metrics[Quality Metrics]
+        
+        VM --> History[Version History]
+        VM --> Diff[Diff Viewer]
+        VM --> Rollback[Rollback System]
+    end
 ```
+
+#### Translation Manager
+- Orchestrates translation workflow
+- Manages translation providers
+- Handles quality control
+- Controls versioning
+
+#### Automatic Translation
+- Provider selection
+- Translation caching
+- Error handling
+- Rate limiting
+
+#### Manual Translation
+- Editor interface
+- Memory integration
+- Glossary access
+- Context viewing
+
+#### Quality Control
+- Automated checks
+- Human review
+- Quality metrics
+- Issue tracking
+
+#### Version Management
+- History tracking
+- Diff generation
+- Rollback support
+- Branch management
 
 ### Game Component
 
-#### Responsibilities
-- Game management
-- Mod association
-- Version tracking
-- Metadata management
-- Cache management
-
-#### Implementation
-```php
-class GameService
-{
-    public function __construct(
-        private readonly GameRepository $repository,
-        private readonly CacheInterface $cache
-    ) {}
-
-    public function getGame(string $id): ?Game
-    {
-        $cacheKey = "game:{$id}";
-        return $this->cache->get($cacheKey, fn() => $this->repository->find($id));
-    }
-
-    public function createGame(array $data): Game
-    {
-        $game = new Game($data);
-        $this->repository->save($game);
-        $this->cache->delete("game:{$game->getId()}");
-        return $game;
-    }
-}
+```mermaid
+graph TD
+    subgraph Game
+        GM[Game Manager] --> Info[Game Info]
+        GM --> Mods[Mod Management]
+        GM --> Files[File System]
+        
+        Info --> Meta[Metadata]
+        Info --> Stats[Statistics]
+        Info --> Config[Configuration]
+        
+        Mods --> List[Mod List]
+        Mods --> Dep[Dependencies]
+        Mods --> Ver[Versions]
+        
+        Files --> Store[Storage]
+        Files --> Sync[Synchronization]
+        Files --> Backup[Backup]
+    end
 ```
 
-### Mod Component
-
-#### Responsibilities
+#### Game Manager
+- Game registration
 - Mod management
-- Game association
-- File management
+- File handling
+- Configuration
+
+#### Game Information
+- Metadata management
+- Statistics tracking
+- Configuration handling
 - Version control
-- Cache management
 
-#### Implementation
-```php
-class ModService
-{
-    public function __construct(
-        private readonly ModRepository $repository,
-        private readonly CacheInterface $cache,
-        private readonly FileManager $fileManager
-    ) {}
+#### Mod Management
+- Mod listing
+- Dependency handling
+- Version control
+- Compatibility checks
 
-    public function getMod(string $id): ?Mod
-    {
-        $cacheKey = "mod:{$id}";
-        return $this->cache->get($cacheKey, fn() => $this->repository->find($id));
-    }
-
-    public function createMod(array $data): Mod
-    {
-        $mod = new Mod($data);
-        $this->repository->save($mod);
-        $this->cache->delete("mod:{$mod->getId()}");
-        return $mod;
-    }
-}
-```
+#### File System
+- Storage management
+- File synchronization
+- Backup handling
+- Access control
 
 ### User Component
 
-#### Responsibilities
-- User management
-- Authentication
-- Authorization
+```mermaid
+graph TD
+    subgraph User
+        UM[User Manager] --> Auth[Authentication]
+        UM --> Prof[Profile]
+        UM --> Perm[Permissions]
+        
+        Auth --> JWT[JWT Handler]
+        Auth --> OAuth[OAuth2]
+        Auth --> Key[API Keys]
+        
+        Prof --> Info[User Info]
+        Prof --> Prefs[Preferences]
+        Prof --> Stats[Statistics]
+        
+        Perm --> Roles[Role System]
+        Perm --> Access[Access Control]
+        Perm --> Audit[Audit Log]
+    end
+```
+
+#### User Manager
+- User registration
 - Profile management
+- Permission control
 - Activity tracking
 
-#### Implementation
-```php
-class UserService
-{
-    public function __construct(
-        private readonly UserRepository $repository,
-        private readonly PasswordHasherInterface $hasher,
-        private readonly TokenManagerInterface $tokenManager
-    ) {}
+#### Authentication
+- JWT handling
+- OAuth2 integration
+- API key management
+- Session control
 
-    public function createUser(array $data): User
-    {
-        $user = new User($data);
-        $user->setPassword($this->hasher->hashPassword($user, $data['password']));
-        $this->repository->save($user);
-        return $user;
-    }
+#### Profile Management
+- User information
+- Preferences
+- Statistics
+- Activity history
 
-    public function authenticateUser(string $email, string $password): ?User
-    {
-        $user = $this->repository->findByEmail($email);
-        if (!$user || !$this->hasher->isPasswordValid($user, $password)) {
-            return null;
-        }
-        return $user;
-    }
-}
-```
+#### Permission System
+- Role management
+- Access control
+- Audit logging
+- Policy enforcement
 
 ## Component Interactions
 
-### Event System
-```php
-class TranslationCreatedEvent
-{
-    public function __construct(
-        private readonly Translation $translation
-    ) {}
+### Translation Flow
 
-    public function getTranslation(): Translation
-    {
-        return $this->translation;
-    }
-}
-
-class TranslationListener
-{
-    public function onTranslationCreated(TranslationCreatedEvent $event): void
-    {
-        // Handle translation creation
-        // Update cache
-        // Send notifications
-        // Update statistics
-    }
-}
+```mermaid
+sequenceDiagram
+    participant User
+    participant Game
+    participant Translation
+    participant Storage
+    
+    User->>Game: Submit Content
+    Game->>Translation: Request Translation
+    Translation->>Storage: Get Existing Translations
+    Storage-->>Translation: Return Translations
+    Translation->>Translation: Automatic Translation
+    Translation->>Translation: Quality Check
+    Translation->>Storage: Store Translation
+    Storage-->>Translation: Confirm Storage
+    Translation-->>Game: Return Translation
+    Game-->>User: Show Translation
 ```
 
-### Cache System
-```php
-class CacheManager
-{
-    public function __construct(
-        private readonly CacheInterface $cache,
-        private readonly TagAwareCacheInterface $taggedCache
-    ) {}
+### Game Integration
 
-    public function get(string $key, callable $callback)
-    {
-        return $this->cache->get($key, $callback);
-    }
-
-    public function invalidateByTags(array $tags): void
-    {
-        $this->taggedCache->invalidateTags($tags);
-    }
-}
+```mermaid
+sequenceDiagram
+    participant User
+    participant Game
+    participant Translation
+    participant Mod
+    
+    User->>Game: Register Game
+    Game->>Mod: Scan Mods
+    Mod->>Translation: Get Translations
+    Translation-->>Mod: Return Translations
+    Mod-->>Game: Update Mod Info
+    Game-->>User: Show Game Status
 ```
 
-### Repository Pattern
-```php
-class TranslationRepository extends ServiceEntityRepository
-{
-    public function findByGame(string $gameId): array
-    {
-        return $this->createQueryBuilder('t')
-            ->andWhere('t.game = :gameId')
-            ->setParameter('gameId', $gameId)
-            ->getQuery()
-            ->getResult();
-    }
+## Dependencies
 
-    public function findByMod(string $modId): array
-    {
-        return $this->createQueryBuilder('t')
-            ->andWhere('t.mod = :modId')
-            ->setParameter('modId', $modId)
-            ->getQuery()
-            ->getResult();
-    }
-}
-```
+### External Dependencies
+- Translation APIs
+- Game APIs
+- Storage Services
+- Authentication Services
 
-## Component Dependencies
+### Internal Dependencies
+- Database Access
+- Cache System
+- Event System
+- Message Queue
 
-### Service Container
-```yaml
-services:
-    App\Service\TranslationService:
-        arguments:
-            $repository: '@App\Repository\TranslationRepository'
-            $cache: '@cache.app'
-            $dispatcher: '@event_dispatcher'
+## Testing Strategy
 
-    App\Service\GameService:
-        arguments:
-            $repository: '@App\Repository\GameRepository'
-            $cache: '@cache.app'
+### Unit Testing
+- Component isolation
+- Interface testing
+- Mock dependencies
+- Edge cases
 
-    App\Service\ModService:
-        arguments:
-            $repository: '@App\Repository\ModRepository'
-            $cache: '@cache.app'
-            $fileManager: '@App\Service\FileManager'
-```
+### Integration Testing
+- Component interaction
+- API integration
+- Database integration
+- Cache integration
 
-## Component Testing
+### Performance Testing
+- Load testing
+- Stress testing
+- Scalability testing
+- Resource monitoring
 
-### Unit Tests
-```php
-class TranslationServiceTest extends TestCase
-{
-    private TranslationRepository $repository;
-    private CacheInterface $cache;
-    private TranslationService $service;
+## Monitoring
 
-    protected function setUp(): void
-    {
-        $this->repository = $this->createMock(TranslationRepository::class);
-        $this->cache = $this->createMock(CacheInterface::class);
-        $this->service = new TranslationService($this->repository, $this->cache);
-    }
+### Metrics
+- Component health
+- Performance metrics
+- Error rates
+- Usage statistics
 
-    public function testGetTranslation(): void
-    {
-        $translation = new Translation();
-        $this->repository->expects($this->once())
-            ->method('find')
-            ->with('123')
-            ->willReturn($translation);
+### Logging
+- Component logs
+- Error logs
+- Audit logs
+- Performance logs
 
-        $result = $this->service->getTranslation('123');
-        $this->assertSame($translation, $result);
-    }
-}
-```
+### Alerts
+- Health alerts
+- Performance alerts
+- Error alerts
+- Security alerts
 
-## Component Monitoring
+## Security
 
-### Metrics Collection
-```php
-class MetricsCollector
-{
-    public function collectTranslationMetrics(): array
-    {
-        return [
-            'total_translations' => $this->repository->count([]),
-            'translations_by_game' => $this->repository->countByGame(),
-            'translations_by_mod' => $this->repository->countByMod(),
-            'cache_hit_rate' => $this->cache->getHitRate()
-        ];
-    }
-}
-```
+### Authentication
+- Component authentication
+- API authentication
+- Service authentication
+- Token management
 
-### Health Checks
-```php
-class HealthChecker
-{
-    public function checkTranslationComponent(): array
-    {
-        return [
-            'status' => 'ok',
-            'database' => $this->checkDatabase(),
-            'cache' => $this->checkCache(),
-            'file_system' => $this->checkFileSystem()
-        ];
-    }
-}
-```
+### Authorization
+- Access control
+- Permission checks
+- Resource protection
+- Audit logging
 
-## Component Security
-
-### Input Validation
-```php
-class TranslationValidator
-{
-    public function validate(array $data): array
-    {
-        $errors = [];
-        if (empty($data['key'])) {
-            $errors['key'] = 'Translation key is required';
-        }
-        if (empty($data['value'])) {
-            $errors['value'] = 'Translation value is required';
-        }
-        return $errors;
-    }
-}
-```
-
-### Access Control
-```php
-class TranslationVoter
-{
-    public function canEdit(User $user, Translation $translation): bool
-    {
-        return $user->hasRole('ROLE_ADMIN') ||
-               $translation->getCreatedBy() === $user;
-    }
-}
-```
+### Data Protection
+- Data encryption
+- Secure storage
+- Secure transmission
+- Access logging
 
 ## Future Improvements
 
-### Component Extensions
-- Plugin system
-- Custom validators
-- Custom repositories
-- Custom services
+### Component Enhancements
+- New features
+- Performance optimization
+- Security improvements
+- Monitoring enhancements
 
-### Performance Optimizations
-- Lazy loading
-- Batch operations
-- Cache optimization
-- Query optimization
+### Integration Improvements
+- New integrations
+- API enhancements
+- Service improvements
+- Tool integration
 
-### Security Enhancements
-- Input sanitization
-- Output escaping
-- Rate limiting
-- Access control
+### Testing Improvements
+- Test coverage
+- Test automation
+- Performance testing
+- Security testing

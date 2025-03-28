@@ -6,6 +6,23 @@ Project Babel is built on a modern, scalable architecture that separates concern
 
 ## System Components
 
+```mermaid
+graph TD
+    Client[Client Applications] --> API[API Layer]
+    API --> Auth[Authentication Layer]
+    API --> Cache[Cache Layer]
+    API --> Service[Service Layer]
+    Service --> DB[(Database)]
+    Service --> Cache
+    Cache --> Redis[(Redis)]
+    Service --> Event[Event System]
+    Event --> Queue[Message Queue]
+    Service --> Trans[Translation Providers]
+    Trans --> DeepL[DeepL]
+    Trans --> Google[Google Translate]
+    Trans --> MS[Microsoft Translator]
+```
+
 ### 1. Client Applications
 - Web Interface
 - API Clients
@@ -69,24 +86,56 @@ Project Babel is built on a modern, scalable architecture that separates concern
 ## Data Flow
 
 ### Request Flow
-1. Client Request
-2. API Gateway
-3. Authentication
-4. Rate Limiting
-5. Request Validation
-6. Service Processing
-7. Database/Cache Access
-8. Response Generation
+```mermaid
+sequenceDiagram
+    participant Client
+    participant API
+    participant Auth
+    participant Service
+    participant DB
+    participant Cache
+    
+    Client->>API: Request
+    API->>Auth: Authenticate
+    Auth-->>API: Token Valid
+    API->>Cache: Check Cache
+    alt Cache Hit
+        Cache-->>API: Return Cached Data
+    else Cache Miss
+        API->>Service: Process Request
+        Service->>DB: Get Data
+        DB-->>Service: Return Data
+        Service-->>API: Processed Response
+        API->>Cache: Update Cache
+    end
+    API-->>Client: Response
+```
 
 ### Translation Flow
-1. Content Submission
-2. Format Detection
-3. Provider Selection
-4. Automatic Translation
-5. Quality Check
-6. Human Review
-7. Version Control
-8. Publication
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Service
+    participant Trans
+    participant DeepL
+    participant Google
+    participant MS
+    participant DB
+    participant Cache
+    
+    Client->>Service: Submit Content
+    Service->>Trans: Request Translation
+    Trans->>DeepL: Translate (High Quality)
+    DeepL-->>Trans: Return Translation
+    Trans->>Service: Return Translation
+    Service->>DB: Store Translation
+    Service->>Cache: Update Cache
+    Service-->>Client: Return Translation
+    
+    Note over Service: Quality Check
+    Note over Service: Human Review
+    Note over Service: Version Control
+```
 
 ## Security Architecture
 
@@ -111,10 +160,16 @@ Project Babel is built on a modern, scalable architecture that separates concern
 ## Performance Architecture
 
 ### Caching Strategy
-- Multi-Level Cache
-- Cache Invalidation
-- Cache Warming
-- Cache Statistics
+```mermaid
+graph LR
+    Request[Request] --> Cache{Cache?}
+    Cache -->|Hit| Response[Response]
+    Cache -->|Miss| Service[Service]
+    Service --> DB[(Database)]
+    Service --> Trans[Translation Provider]
+    Service --> Cache
+    Cache --> Response
+```
 
 ### Database Optimization
 - Query Optimization
