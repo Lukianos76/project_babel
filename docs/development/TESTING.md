@@ -1,27 +1,25 @@
-# Testing Guide
+# Testing Guidelines
 
 ## Overview
 
-This document outlines the testing strategy for Project Babel, including unit tests, functional tests, and integration tests.
+This document outlines the testing strategy and guidelines for Project Babel, including different types of tests, testing tools, and best practices.
 
 ## Test Types
 
-### Unit Tests
+### 1. Unit Tests
 
-Unit tests focus on testing individual components in isolation.
+Unit tests test individual components in isolation.
 
 ```php
 class TranslationServiceTest extends TestCase
 {
     private TranslationRepository $repository;
-    private CacheInterface $cache;
     private TranslationService $service;
 
     protected function setUp(): void
     {
         $this->repository = $this->createMock(TranslationRepository::class);
-        $this->cache = $this->createMock(CacheInterface::class);
-        $this->service = new TranslationService($this->repository, $this->cache);
+        $this->service = new TranslationService($this->repository);
     }
 
     public function testGetTranslation(): void
@@ -35,168 +33,276 @@ class TranslationServiceTest extends TestCase
         $result = $this->service->getTranslation('123');
         $this->assertSame($translation, $result);
     }
-
-    public function testGetTranslationNotFound(): void
-    {
-        $this->repository->expects($this->once())
-            ->method('find')
-            ->with('123')
-            ->willReturn(null);
-
-        $result = $this->service->getTranslation('123');
-        $this->assertNull($result);
-    }
 }
 ```
 
-### Functional Tests
+### 2. Integration Tests
 
-Functional tests test the application's behavior from a user's perspective.
-
-```php
-class TranslationControllerTest extends WebTestCase
-{
-    public function testListTranslations(): void
-    {
-        $client = static::createClient();
-        $client->request('GET', '/api/translations');
-
-        $this->assertResponseIsSuccessful();
-        $this->assertResponseHeaderSame('Content-Type', 'application/json');
-    }
-
-    public function testCreateTranslation(): void
-    {
-        $client = static::createClient();
-        $client->request('POST', '/api/translations', [
-            'json' => [
-                'key' => 'welcome',
-                'value' => 'Welcome to our site',
-                'language' => 'en'
-            ]
-        ]);
-
-        $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
-        $this->assertResponseHeaderSame('Content-Type', 'application/json');
-    }
-}
-```
-
-### Integration Tests
-
-Integration tests verify that different components work together correctly.
+Integration tests test component interactions.
 
 ```php
 class TranslationIntegrationTest extends WebTestCase
 {
-    private EntityManagerInterface $entityManager;
-    private TranslationService $service;
-
-    protected function setUp(): void
-    {
-        self::bootKernel();
-        $this->entityManager = self::getContainer()->get(EntityManagerInterface::class);
-        $this->service = self::getContainer()->get(TranslationService::class);
-    }
-
     public function testTranslationWorkflow(): void
     {
-        // Create translation
-        $translation = new Translation();
-        $translation->setKey('welcome');
-        $translation->setValue('Welcome');
-        $translation->setLanguage('en');
+        $client = static::createClient();
         
-        $this->entityManager->persist($translation);
-        $this->entityManager->flush();
-
-        // Retrieve translation
-        $result = $this->service->getTranslation($translation->getId());
-        $this->assertNotNull($result);
-        $this->assertEquals('welcome', $result->getKey());
-
-        // Update translation
-        $result->setValue('Welcome Back');
-        $this->entityManager->flush();
-
-        // Verify update
-        $updated = $this->service->getTranslation($translation->getId());
-        $this->assertEquals('Welcome Back', $updated->getValue());
+        // Create translation
+        $client->request('POST', '/api/translations', [
+            'key' => 'test.key',
+            'value' => 'Test Value',
+            'locale' => 'en'
+        ]);
+        
+        $this->assertResponseIsSuccessful();
+        
+        // Get translation
+        $client->request('GET', '/api/translations/test.key');
+        
+        $this->assertResponseIsSuccessful();
+        $this->assertResponseHeaderSame('Content-Type', 'application/json');
     }
 }
 ```
 
-## Test Configuration
+### 3. Functional Tests
 
-### PHPUnit Configuration
+Functional tests test complete features.
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
-         colors="true"
-         bootstrap="tests/bootstrap.php">
-    <testsuites>
-        <testsuite name="Project Test Suite">
-            <directory>tests</directory>
-        </testsuite>
-    </testsuites>
-        <testsuite name="Functional">
-            <directory>tests/Functional</directory>
-        </testsuite>
-    </testsuites>
-    <coverage>
-        <include>
-            <directory suffix=".php">src</directory>
-        </include>
-    </coverage>
-</phpunit>
+```php
+class TranslationFunctionalTest extends WebTestCase
+{
+    public function testTranslationManagement(): void
+    {
+        $client = static::createClient();
+        
+        // Login
+        $client->request('POST', '/api/login', [
+            'username' => 'admin',
+            'password' => 'password'
+        ]);
+        
+        // Create translation
+        $client->request('POST', '/api/translations', [
+            'key' => 'welcome',
+            'value' => 'Welcome to our site',
+            'locale' => 'en'
+        ]);
+        
+        // Verify translation
+        $client->request('GET', '/api/translations/welcome');
+        $this->assertResponseIsSuccessful();
+    }
+}
 ```
 
-### Test Commands
+## Test Organization
+
+### Directory Structure
+
+```
+tests/
+├── Unit/              # Unit tests
+├── Integration/       # Integration tests
+├── Functional/        # Functional tests
+├── Api/              # API tests
+└── Fixtures/         # Test fixtures
+```
+
+### Naming Conventions
+
+- Test classes: `*Test.php`
+- Test methods: `test*()`
+- Data providers: `provide*()`
+
+## Testing Tools
+
+### 1. PHPUnit
+
 ```bash
 # Run all tests
-vendor/bin/phpunit
+php bin/phpunit
 
 # Run specific test suite
-vendor/bin/phpunit --testsuite Unit
+php bin/phpunit tests/Unit
+php bin/phpunit tests/Integration
 
-# Run with coverage report
-vendor/bin/phpunit --coverage-html coverage
-
-# Run specific test file
-vendor/bin/phpunit tests/Unit/Service/TranslationServiceTest.php
+# Run with coverage
+php bin/phpunit --coverage-html coverage
 ```
 
-## Best Practices
+### 2. PHP CS Fixer
 
-### Test Naming
-- Use clear, descriptive names
-- Follow pattern: test[What][ExpectedResult]
-- Use camelCase
-- Avoid abbreviations
+```bash
+# Check code style
+vendor/bin/php-cs-fixer fix --dry-run
 
-### Test Organization
-- One test class per source class
-- Group related tests
-- Use data providers for variations
-- Keep tests independent
+# Fix code style
+vendor/bin/php-cs-fixer fix
+```
 
-### Test Coverage
-- Aim for high coverage
-- Focus on critical paths
+### 3. PHPStan
+
+```bash
+# Run static analysis
+vendor/bin/phpstan analyse
+```
+
+### 4. Psalm
+
+```bash
+# Run type checking
+vendor/bin/psalm
+```
+
+## Test Coverage
+
+### Coverage Requirements
+
+- Minimum 80% code coverage
+- 100% coverage for critical paths
+- Test all public methods
+- Test error conditions
+
+### Coverage Report
+
+```bash
+# Generate coverage report
+php bin/phpunit --coverage-html coverage
+
+# View coverage report
+open coverage/index.html
+```
+
+## Testing Best Practices
+
+### 1. Test Isolation
+
+- Use fresh database for each test
+- Clean up after tests
+- Mock external dependencies
+- Use test fixtures
+
+### 2. Test Data
+
+```php
+class TranslationFixtures
+{
+    public function load(ObjectManager $manager): void
+    {
+        $translation = new Translation();
+        $translation->setKey('welcome');
+        $translation->setValue('Welcome');
+        $translation->setLocale('en');
+        
+        $manager->persist($translation);
+        $manager->flush();
+    }
+}
+```
+
+### 3. Assertions
+
+- Use specific assertions
 - Test edge cases
-- Test error scenarios
+- Test error conditions
+- Test boundary conditions
 
-### Performance Considerations
+### 4. Performance
+
 - Keep tests fast
 - Use appropriate test types
-- Clean up resources
-- Use test databases
+- Avoid unnecessary setup
+- Use data providers
+
+## API Testing
+
+### 1. Request Testing
+
+```php
+class ApiTest extends WebTestCase
+{
+    public function testCreateTranslation(): void
+    {
+        $client = static::createClient();
+        
+        $client->request('POST', '/api/translations', [
+            'key' => 'test.key',
+            'value' => 'Test Value',
+            'locale' => 'en'
+        ]);
+        
+        $this->assertResponseIsSuccessful();
+        $this->assertResponseHeaderSame('Content-Type', 'application/json');
+    }
+}
+```
+
+### 2. Response Testing
+
+```php
+class ResponseTest extends WebTestCase
+{
+    public function testTranslationResponse(): void
+    {
+        $client = static::createClient();
+        
+        $client->request('GET', '/api/translations/test.key');
+        
+        $response = $client->getResponse();
+        $data = json_decode($response->getContent(), true);
+        
+        $this->assertArrayHasKey('key', $data);
+        $this->assertArrayHasKey('value', $data);
+        $this->assertArrayHasKey('locale', $data);
+    }
+}
+```
+
+## Database Testing
+
+### 1. Database Fixtures
+
+```php
+class DatabaseTest extends WebTestCase
+{
+    protected function setUp(): void
+    {
+        $this->loadFixtures([
+            TranslationFixtures::class
+        ]);
+    }
+    
+    public function testDatabaseOperations(): void
+    {
+        $client = static::createClient();
+        
+        $client->request('GET', '/api/translations');
+        
+        $this->assertResponseIsSuccessful();
+    }
+}
+```
+
+### 2. Transaction Management
+
+```php
+class TransactionTest extends WebTestCase
+{
+    use TransactionalTestCase;
+    
+    public function testTransactionRollback(): void
+    {
+        // Test database operations
+        // Changes will be rolled back automatically
+    }
+}
+```
 
 ## Continuous Integration
 
-### GitHub Actions
+### 1. GitHub Actions
+
 ```yaml
 name: Tests
 
@@ -205,76 +311,32 @@ on: [push, pull_request]
 jobs:
   test:
     runs-on: ubuntu-latest
+    
     steps:
       - uses: actions/checkout@v2
+      
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
+          
       - name: Install dependencies
         run: composer install
+        
       - name: Run tests
-        run: vendor/bin/phpunit
+        run: php bin/phpunit
 ```
 
-### Coverage Reports
-- Generate on CI
+### 2. Test Reports
+
+- Generate test reports
 - Track coverage trends
-- Set minimum thresholds
-- Review uncovered code
+- Monitor test results
+- Set up notifications
 
-## Debugging Tests
+## Support
 
-### Common Issues
-1. **Database Issues**
-   ```bash
-   # Reset test database
-   bin/console doctrine:database:drop --force --env=test
-   bin/console doctrine:database:create --env=test
-   bin/console doctrine:migrations:migrate --env=test
-   ```
-
-2. **Cache Issues**
-   ```bash
-   # Clear test cache
-   bin/console cache:clear --env=test
-   ```
-
-3. **Fixture Issues**
-   ```bash
-   # Reload fixtures
-   bin/console doctrine:fixtures:load --env=test
-   ```
-
-### Debugging Tools
-- Xdebug
-- PHPUnit debug mode
-- Test database tools
-- Log inspection
-
-## Test Maintenance
-
-### Regular Tasks
-- Update tests with new features
-- Remove obsolete tests
-- Review test coverage
-- Optimize test performance
-
-### Code Review
-- Review test quality
-- Check test coverage
-- Verify test independence
-- Review test data
-
-## Resources
-
-### Documentation
-- [PHPUnit Manual](https://phpunit.readthedocs.io/)
-- [Symfony Testing](https://symfony.com/doc/current/testing.html)
-- [Testing Best Practices](https://phpunit.readthedocs.io/en/9.5/writing-tests-for-phpunit.html)
-
-### Tools
-- PHPUnit
-- Xdebug
-- PHPStan
-- PHP CS Fixer 
+For testing questions:
+- Check the [Development Guidelines](GUIDELINES.md)
+- Review the [Code Structure](CODE_STRUCTURE.md)
+- Contact the development team 

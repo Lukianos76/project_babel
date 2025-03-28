@@ -2,351 +2,249 @@
 
 ## Overview
 
-This document provides guidelines for contributing to Project Babel, including setup instructions, coding standards, and the contribution process.
+Thank you for your interest in contributing to Project Babel! This document provides guidelines and instructions for contributing to the project.
 
 ## Getting Started
 
 ### Prerequisites
 
-1. PHP 8.2 or higher
-2. Composer 2.0 or higher
-3. Git
-4. Docker and Docker Compose
-5. Node.js 18 or higher (for frontend development)
+- PHP 8.2 or higher
+- Composer
+- Git
+- MySQL 8.0 or higher
+- Redis (optional, for caching)
 
-### Initial Setup
+### Development Setup
 
-```bash
-# Clone the repository
-git clone https://github.com/your-org/project-babel.git
-cd project-babel
-
-# Install dependencies
-composer install
-
-# Copy environment file
-cp .env.example .env
-
-# Start Docker containers
-docker-compose up -d
-
-# Run migrations
-php bin/console doctrine:migrations:migrate
-```
+1. Fork the repository
+2. Clone your fork:
+   ```bash
+   git clone https://github.com/your-username/project_babel.git
+   cd project_babel
+   ```
+3. Install dependencies:
+   ```bash
+   composer install
+   ```
+4. Copy environment file:
+   ```bash
+   cp .env.example .env
+   ```
+5. Configure your environment:
+   ```bash
+   # Edit .env with your settings
+   APP_ENV=dev
+   DATABASE_URL=mysql://user:pass@localhost:3306/project_babel
+   ```
+6. Create database:
+   ```bash
+   php bin/console doctrine:database:create
+   ```
+7. Run migrations:
+   ```bash
+   php bin/console doctrine:migrations:migrate
+   ```
+8. Start development server:
+   ```bash
+   symfony server:start
+   ```
 
 ## Development Workflow
 
-### Branch Strategy
+### 1. Create a Branch
 
-1. Create a new branch for your feature:
-   ```bash
-   git checkout -b feature/your-feature-name
-   ```
+```bash
+# Create and switch to a new feature branch
+git checkout -b feature/your-feature-name
 
-2. Make your changes following our [coding standards](GUIDELINES.md)
-
-3. Write tests for new features
-
-4. Update documentation
-
-5. Create a pull request
-
-### Commit Messages
-
-Follow conventional commits:
-
-```
-type(scope): description
-
-[optional body]
-
-[optional footer]
+# Or for bug fixes
+git checkout -b fix/your-bug-fix
 ```
 
-Types:
-- `feat`: New feature
-- `fix`: Bug fix
-- `docs`: Documentation changes
-- `style`: Code style changes
-- `refactor`: Code refactoring
-- `test`: Test changes
-- `chore`: Maintenance tasks
+### 2. Make Changes
 
-Example:
-```
-feat(auth): implement JWT authentication
+- Follow the [Code Style Guidelines](GUIDELINES.md)
+- Write tests for new features
+- Update documentation
+- Keep commits focused and atomic
 
-- Add JWT token generation
-- Implement token validation
-- Add refresh token support
+### 3. Testing
 
-Closes #123
-```
+```bash
+# Run all tests
+php bin/phpunit
 
-## Code Standards
+# Run specific test suite
+php bin/phpunit tests/Unit
+php bin/phpunit tests/Integration
 
-### PHP Standards
-
-1. Follow PSR-12 coding standards
-2. Use strict typing
-3. Use type hints
-4. Use constructor property promotion
-5. Use attributes where applicable
-
-Example:
-```php
-declare(strict_types=1);
-
-namespace App\Service;
-
-use App\Entity\User;
-use App\Repository\UserRepository;
-
-class UserService
-{
-    public function __construct(
-        private readonly UserRepository $repository
-    ) {
-    }
-
-    public function getUser(string $id): ?User
-    {
-        return $this->repository->find($id);
-    }
-}
+# Run with coverage report
+php bin/phpunit --coverage-html coverage
 ```
 
-### Documentation Standards
+### 4. Code Quality
 
-1. PHPDoc blocks for classes and methods
-2. Clear and concise comments
-3. Update README when needed
-4. Document API changes
+```bash
+# Run PHP CS Fixer
+vendor/bin/php-cs-fixer fix
 
-Example:
-```php
-/**
- * User service for managing user-related operations.
- */
-class UserService
-{
-    /**
-     * Creates a new user.
-     *
-     * @param array<string, mixed> $data User data
-     *
-     * @throws ValidationException If data is invalid
-     */
-    public function createUser(array $data): User
-    {
-        // Implementation
-    }
-}
+# Run PHPStan
+vendor/bin/phpstan analyse
+
+# Run Psalm
+vendor/bin/psalm
 ```
+
+### 5. Documentation
+
+- Update relevant documentation
+- Add PHPDoc blocks
+- Update API documentation
+- Add examples where needed
+
+## Pull Request Process
+
+### 1. Before Submitting
+
+- Ensure all tests pass
+- Fix any code style issues
+- Update documentation
+- Rebase on main branch
+
+### 2. Creating the PR
+
+- Use a descriptive title
+- Reference related issues
+- Include detailed description
+- Add screenshots for UI changes
+
+### 3. PR Review
+
+- Address review comments
+- Keep commits clean
+- Update PR as needed
+- Request re-review when ready
+
+## Issue Reporting
+
+### Bug Reports
+
+- Use the bug report template
+- Include steps to reproduce
+- Add error messages
+- Provide environment details
+
+### Feature Requests
+
+- Use the feature request template
+- Explain the problem
+- Propose a solution
+- Consider alternatives
+
+## Code Review Guidelines
+
+### For Contributors
+
+- Keep PRs focused and small
+- Respond to review comments
+- Make requested changes
+- Test thoroughly
+
+### For Reviewers
+
+- Be constructive
+- Focus on code quality
+- Consider maintainability
+- Check for security issues
+
+## Documentation
+
+### Code Documentation
+
+- Document public APIs
+- Include examples
+- Explain complex logic
+- Keep docs up to date
+
+### API Documentation
+
+- Document endpoints
+- Include request/response examples
+- Document errors
+- Keep OpenAPI spec updated
 
 ## Testing
 
 ### Unit Tests
 
-```php
-class UserServiceTest extends TestCase
-{
-    private UserRepository $repository;
-    private UserService $service;
+- Test business logic
+- Mock dependencies
+- Test edge cases
+- Keep tests focused
 
-    protected function setUp(): void
-    {
-        $this->repository = $this->createMock(UserRepository::class);
-        $this->service = new UserService($this->repository);
-    }
+### Integration Tests
 
-    public function testGetUser(): void
-    {
-        $user = new User();
-        $this->repository->expects($this->once())
-            ->method('find')
-            ->with('123')
-            ->willReturn($user);
+- Test API endpoints
+- Test database operations
+- Test external services
+- Test error scenarios
 
-        $result = $this->service->getUser('123');
-        $this->assertSame($user, $result);
-    }
-}
-```
+## Security
 
-### Functional Tests
+### Reporting Security Issues
 
-```php
-class UserControllerTest extends WebTestCase
-{
-    public function testListUsers(): void
-    {
-        $client = static::createClient();
-        $client->request('GET', '/api/users');
+- Email security@projectbabel.org
+- Include detailed description
+- Provide steps to reproduce
+- Wait for response
 
-        $this->assertResponseIsSuccessful();
-        $this->assertResponseHeaderSame('Content-Type', 'application/json');
-    }
-}
-```
+### Security Best Practices
 
-## Pull Request Process
-
-### Before Submitting
-
-1. Run tests:
-   ```bash
-   vendor/bin/phpunit
-   ```
-
-2. Check code style:
-   ```bash
-   vendor/bin/php-cs-fixer fix --dry-run
-   ```
-
-3. Run static analysis:
-   ```bash
-   vendor/bin/phpstan analyse
-   ```
-
-### Pull Request Template
-
-```markdown
-## Description
-[Describe your changes]
-
-## Type of change
-- [ ] Bug fix
-- [ ] New feature
-- [ ] Breaking change
-- [ ] Documentation update
-
-## Testing
-- [ ] Unit tests added/updated
-- [ ] Functional tests added/updated
-- [ ] Manual testing completed
-
-## Checklist
-- [ ] Code follows PSR-12
-- [ ] Tests pass
-- [ ] Documentation updated
-- [ ] Security reviewed
-```
-
-## Code Review Process
-
-### For Authors
-
-1. Address all review comments
-2. Update documentation if needed
-3. Add tests if requested
-4. Keep commits clean and focused
-
-### For Reviewers
-
-1. Review promptly
-2. Be constructive
-3. Focus on important issues
-4. Provide clear explanations
-
-## Security Guidelines
-
-### Input Validation
-
-```php
-class UserValidator
-{
-    public function validate(array $data): array
-    {
-        $errors = [];
-        
-        if (empty($data['email'])) {
-            $errors['email'] = 'Email is required';
-        } elseif (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
-            $errors['email'] = 'Invalid email format';
-        }
-        
-        return $errors;
-    }
-}
-```
-
-### Output Sanitization
-
-```php
-class ResponseSanitizer
-{
-    public function sanitize(array $data): array
-    {
-        return array_map(function ($value) {
-            if (is_string($value)) {
-                return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
-            }
-            return $value;
-        }, $data);
-    }
-}
-```
-
-## Performance Guidelines
-
-### Database Optimization
-
-1. Use indexes appropriately
-2. Optimize queries
-3. Use caching
-4. Implement pagination
-
-### Cache Usage
-
-```php
-class TranslationService
-{
-    public function getTranslation(string $id): ?Translation
-    {
-        $cacheKey = "translation:{$id}";
-        return $this->cache->get($cacheKey, function () use ($id) {
-            return $this->repository->find($id);
-        });
-    }
-}
-```
-
-## Getting Help
-
-### Resources
-
-1. [Project Documentation](../README.md)
-2. [API Documentation](../api/README.md)
-3. [Architecture Documentation](../architecture/README.md)
-4. [Development Guidelines](GUIDELINES.md)
-
-### Communication
-
-1. GitHub Issues
-2. Pull Request discussions
-3. Team chat
-4. Email
+- Follow OWASP guidelines
+- Validate input
+- Sanitize output
+- Use prepared statements
 
 ## Release Process
 
 ### Versioning
 
-Follow semantic versioning:
-- MAJOR version for incompatible API changes
-- MINOR version for backwards-compatible functionality
-- PATCH version for backwards-compatible bug fixes
+- Follow semantic versioning
+- Update CHANGELOG.md
+- Tag releases
+- Update documentation
 
 ### Release Checklist
 
-1. Update version numbers
-2. Update changelog
-3. Run all tests
-4. Update documentation
-5. Create release tag
-6. Deploy to staging
-7. Deploy to production
+- Run all tests
+- Check dependencies
+- Update version numbers
+- Generate changelog
+- Create release notes
+
+## Community Guidelines
+
+### Communication
+
+- Be respectful
+- Use inclusive language
+- Stay on topic
+- Follow code of conduct
+
+### Getting Help
+
+- Check documentation
+- Search existing issues
+- Ask in discussions
+- Contact maintainers
 
 ## License
 
-By contributing to Project Babel, you agree that your contributions will be licensed under the GNU General Public License v3.0. 
+By contributing, you agree that your contributions will be licensed under the project's MIT License.
+
+## Support
+
+For contribution questions:
+- Check the [Development Guidelines](GUIDELINES.md)
+- Review the [Code Structure](CODE_STRUCTURE.md)
+- Contact the development team 

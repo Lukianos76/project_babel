@@ -1,73 +1,34 @@
 # Development Guidelines
 
+## Overview
+
+This document provides guidelines and best practices for developing Project Babel. Following these guidelines ensures code quality, maintainability, and consistency across the project.
+
 ## Code Style
 
 ### PHP Standards
 
-Project Babel follows PSR-12 coding standards. Key points:
+- Follow PSR-12 coding standards
+- Use strict typing where possible
+- Use type hints for all method parameters and return types
+- Use constructor property promotion when applicable
+- Use attributes instead of annotations where possible
 
-1. **File Structure**
-   ```php
-   <?php
+### Naming Conventions
 
-   declare(strict_types=1);
+- Use PascalCase for class names
+- Use camelCase for method and variable names
+- Use UPPER_CASE for constants
+- Use snake_case for configuration keys
+- Prefix interfaces with 'I' (e.g., `ITranslationService`)
 
-   namespace App\Service;
+### Code Organization
 
-   use App\Entity\User;
-   use App\Repository\UserRepository;
-
-   class UserService
-   {
-       public function __construct(
-           private readonly UserRepository $repository
-       ) {
-       }
-
-       public function getUser(string $id): ?User
-       {
-           return $this->repository->find($id);
-       }
-   }
-   ```
-
-2. **Naming Conventions**
-   - Classes: PascalCase (e.g., `UserService`)
-   - Methods: camelCase (e.g., `getUser`)
-   - Properties: camelCase (e.g., `$userRepository`)
-   - Constants: UPPER_SNAKE_CASE (e.g., `MAX_LOGIN_ATTEMPTS`)
-
-3. **Type Declarations**
-   ```php
-   public function createUser(array $data): User
-   {
-       // Implementation
-   }
-   ```
-
-### Symfony Standards
-
-1. **Service Configuration**
-   ```yaml
-   services:
-       App\Service\UserService:
-           arguments:
-               $repository: '@App\Repository\UserRepository'
-           tags:
-               - { name: 'app.service' }
-   ```
-
-2. **Controller Structure**
-   ```php
-   class UserController extends AbstractController
-   {
-       #[Route('/api/users', name: 'api_users_list', methods: ['GET'])]
-       public function list(UserService $userService): JsonResponse
-       {
-           return $this->json($userService->getAllUsers());
-       }
-   }
-   ```
+- One class per file
+- Keep files under 500 lines when possible
+- Keep methods focused and under 20 lines when possible
+- Use meaningful variable and method names
+- Add proper PHPDoc blocks for classes and methods
 
 ## Git Workflow
 
@@ -80,8 +41,6 @@ Project Babel follows PSR-12 coding standards. Key points:
 
 ### Commit Messages
 
-Follow conventional commits:
-
 ```
 type(scope): description
 
@@ -91,299 +50,161 @@ type(scope): description
 ```
 
 Types:
-- `feat`: New feature
-- `fix`: Bug fix
-- `docs`: Documentation changes
-- `style`: Code style changes
-- `refactor`: Code refactoring
-- `test`: Test changes
-- `chore`: Maintenance tasks
+- feat: New feature
+- fix: Bug fix
+- docs: Documentation changes
+- style: Code style changes
+- refactor: Code refactoring
+- test: Test changes
+- chore: Maintenance tasks
 
-Example:
-```
-feat(auth): implement JWT authentication
+### Pull Requests
 
-- Add JWT token generation
-- Implement token validation
-- Add refresh token support
+- Create descriptive PR titles
+- Include detailed descriptions
+- Reference related issues
+- Add screenshots for UI changes
+- Request reviews from team members
 
-Closes #123
-```
+## Testing
 
-### Pull Request Process
+### Test Coverage
 
-1. Create feature branch
-2. Make changes
-3. Write tests
-4. Update documentation
-5. Create pull request
-6. Address review comments
-7. Merge after approval
+- Maintain minimum 80% test coverage
+- Write tests for new features
+- Include unit and integration tests
+- Test edge cases and error conditions
 
-## Testing Guidelines
+### Test Organization
 
-### Unit Tests
+- Mirror source directory structure
+- Use descriptive test names
+- Follow test naming conventions:
+  - `testShouldDoSomethingWhenCondition`
+  - `testShouldThrowExceptionWhenInvalidInput`
+  - `testShouldReturnExpectedResult`
 
-```php
-class UserServiceTest extends TestCase
-{
-    private UserRepository $repository;
-    private UserService $service;
+### Test Best Practices
 
-    protected function setUp(): void
-    {
-        $this->repository = $this->createMock(UserRepository::class);
-        $this->service = new UserService($this->repository);
-    }
+- Use dependency injection
+- Mock external dependencies
+- Keep tests independent
+- Use data providers for multiple test cases
+- Clean up test data after each test
 
-    public function testGetUser(): void
-    {
-        $user = new User();
-        $this->repository->expects($this->once())
-            ->method('find')
-            ->with('123')
-            ->willReturn($user);
-
-        $result = $this->service->getUser('123');
-        $this->assertSame($user, $result);
-    }
-}
-```
-
-### Functional Tests
-
-```php
-class UserControllerTest extends WebTestCase
-{
-    public function testListUsers(): void
-    {
-        $client = static::createClient();
-        $client->request('GET', '/api/users');
-
-        $this->assertResponseIsSuccessful();
-        $this->assertResponseHeaderSame('Content-Type', 'application/json');
-    }
-}
-```
-
-## Documentation Standards
+## Documentation
 
 ### Code Documentation
 
-```php
-/**
- * User service for managing user-related operations.
- */
-class UserService
-{
-    /**
-     * Creates a new user.
-     *
-     * @param array<string, mixed> $data User data
-     *
-     * @throws ValidationException If data is invalid
-     */
-    public function createUser(array $data): User
-    {
-        // Implementation
-    }
-}
-```
+- Document all public APIs
+- Include parameter and return type descriptions
+- Document exceptions and side effects
+- Keep documentation up to date
 
 ### API Documentation
 
-```php
-/**
- * @OA\Get(
- *     path="/api/users",
- *     summary="List all users",
- *     @OA\Response(
- *         response=200,
- *         description="Successful operation",
- *         @OA\JsonContent(
- *             type="array",
- *             @OA\Items(ref=@Model(type=User::class))
- *         )
- *     )
- * )
- */
-```
+- Use OpenAPI/Swagger annotations
+- Include request/response examples
+- Document error responses
+- Keep API versioning clear
 
-## Security Guidelines
+### README Updates
 
-### Input Validation
+- Update when adding new features
+- Document breaking changes
+- Include setup instructions
+- Add troubleshooting guides
 
-```php
-class UserValidator
-{
-    public function validate(array $data): array
-    {
-        $errors = [];
-        
-        if (empty($data['email'])) {
-            $errors['email'] = 'Email is required';
-        } elseif (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
-            $errors['email'] = 'Invalid email format';
-        }
-        
-        return $errors;
-    }
-}
-```
+## Security
 
-### Output Sanitization
+### Authentication
 
-```php
-class ResponseSanitizer
-{
-    public function sanitize(array $data): array
-    {
-        return array_map(function ($value) {
-            if (is_string($value)) {
-                return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
-            }
-            return $value;
-        }, $data);
-    }
-}
-```
+- Use secure authentication methods
+- Implement proper session management
+- Use HTTPS for all requests
+- Implement rate limiting
 
-## Performance Guidelines
+### Data Protection
 
-### Database Optimization
+- Sanitize user input
+- Use prepared statements
+- Implement proper access control
+- Follow OWASP guidelines
 
-1. Use indexes appropriately
-2. Optimize queries
-3. Use caching
-4. Implement pagination
+### API Security
 
-### Cache Usage
+- Use API keys or tokens
+- Implement proper CORS policies
+- Validate all requests
+- Log security events
 
-```php
-class TranslationService
-{
-    public function getTranslation(string $id): ?Translation
-    {
-        $cacheKey = "translation:{$id}";
-        return $this->cache->get($cacheKey, function () use ($id) {
-            return $this->repository->find($id);
-        });
-    }
-}
-```
+## Performance
+
+### Code Optimization
+
+- Use caching where appropriate
+- Optimize database queries
+- Minimize database calls
+- Use lazy loading
+
+### Frontend Optimization
+
+- Minify assets
+- Use CDN for static files
+- Implement proper caching
+- Optimize images
 
 ## Error Handling
 
 ### Exception Handling
 
-```php
-class ApiExceptionListener
-{
-    public function onKernelException(ExceptionEvent $event): void
-    {
-        $exception = $event->getThrowable();
-        
-        if ($exception instanceof ValidationException) {
-            $response = new JsonResponse([
-                'error' => 'Validation failed',
-                'details' => $exception->getErrors()
-            ], Response::HTTP_BAD_REQUEST);
-        } else {
-            $response = new JsonResponse([
-                'error' => 'Internal server error'
-            ], Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
-        
-        $event->setResponse($response);
-    }
-}
-```
+- Use custom exceptions
+- Log errors appropriately
+- Provide meaningful error messages
+- Handle edge cases
 
 ### Logging
 
-```php
-class ErrorLogger
-{
-    public function logError(\Throwable $error): void
-    {
-        $this->logger->error('Application error', [
-            'message' => $error->getMessage(),
-            'file' => $error->getFile(),
-            'line' => $error->getLine(),
-            'trace' => $error->getTraceAsString()
-        ]);
-    }
-}
-```
+- Use appropriate log levels
+- Include context in logs
+- Implement structured logging
+- Rotate logs regularly
 
-## Deployment Guidelines
+## Deployment
 
-### Environment Configuration
+### Environment Setup
 
-```yaml
-# .env
-APP_ENV=prod
-APP_DEBUG=0
-DATABASE_URL=mysql://user:pass@host:3306/dbname
-REDIS_URL=redis://localhost:6379
-```
+- Use environment variables
+- Document required configurations
+- Use Docker for consistency
+- Implement CI/CD pipelines
 
-### Deployment Checklist
+### Monitoring
 
-1. Run tests
-2. Clear cache
-3. Warm up cache
-4. Run migrations
-5. Update assets
-6. Check logs
-7. Monitor performance
+- Implement health checks
+- Monitor error rates
+- Track performance metrics
+- Set up alerts
 
-## Monitoring Guidelines
+## Code Review
 
-### Health Checks
+### Review Process
 
-```php
-class HealthChecker
-{
-    public function check(): array
-    {
-        return [
-            'database' => $this->checkDatabase(),
-            'cache' => $this->checkCache(),
-            'filesystem' => $this->checkFilesystem()
-        ];
-    }
-}
-```
+- Review all code changes
+- Check for security issues
+- Verify test coverage
+- Ensure documentation updates
 
-### Performance Monitoring
+### Review Guidelines
 
-```php
-class PerformanceMonitor
-{
-    public function collectMetrics(): array
-    {
-        return [
-            'memory_usage' => memory_get_usage(true),
-            'execution_time' => microtime(true) - $this->startTime,
-            'database_queries' => $this->getQueryCount()
-        ];
-    }
-}
-```
+- Be constructive
+- Focus on code quality
+- Consider maintainability
+- Check for best practices
 
-## Future Considerations
+## Support
 
-### Scalability
-
-1. Implement horizontal scaling
-2. Use load balancing
-3. Implement caching strategies
-4. Optimize database queries
-
-### Maintenance
-
-1. Regular dependency updates
-2. Security patches
-3. Performance optimization
-4. Code cleanup 
+For development questions:
+- Check the [Code Structure](CODE_STRUCTURE.md)
+- Review the [Architecture Documentation](../architecture/SYSTEM_ARCHITECTURE.md)
+- Contact the development team 
