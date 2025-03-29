@@ -1,10 +1,10 @@
 # Database Schema
 
 ## Purpose
-_Describe the database schema and data model used in Project Babel._
+_Describe the database schema, data models, and relationships in Project Babel._
 
 ## Scope
-_This document covers database tables, relationships, and data structures._
+_This document covers database design, table structures, and data relationships._
 
 ## Dependencies
 - [system-architecture.md](system-architecture.md)
@@ -13,9 +13,24 @@ _This document covers database tables, relationships, and data structures._
 - [translation.md](../features/translation.md)
 
 ## See Also
-- [system-architecture.md](system-architecture.md) - System architecture
-- [component-architecture.md](component-architecture.md) - Component architecture
-- [security-architecture.md](security-architecture.md) - Security architecture
+- [System Architecture](system-architecture.md) - Overall system design
+- [Component Architecture](component-architecture.md) - Component interactions
+- [Security Architecture](security-architecture.md) - Security implementation
+- [Deployment Guide](../development/deployment.md) - Database deployment
+
+## Table of Contents
+- [Overview](#overview)
+- [Database Design](#database-design)
+- [Table Structures](#table-structures)
+- [Relationships](#relationships)
+- [Indexes](#indexes)
+- [Constraints](#constraints)
+- [Data Types](#data-types)
+- [Migrations](#migrations)
+- [Backup and Recovery](#backup-and-recovery)
+- [Performance](#performance)
+- [Security](#security)
+- [Support](#support)
 
 ## Overview
 

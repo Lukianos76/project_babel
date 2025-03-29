@@ -13,12 +13,12 @@ _This document covers API error handling, status codes, and error response forma
 - [error-handling.md](../development/error-handling.md)
 
 ## See Also
-- [api-overview.md](api-overview.md) - General API documentation
-- [error-handling.md](../development/error-handling.md) - Development error handling guidelines
-- [authentication.md](authentication.md) - Authentication error handling
-- [endpoints.md](endpoints.md) - Endpoint-specific error responses
-- [rate-limiting.md](rate-limiting.md) - Rate limit error handling
 - [API Overview](api-overview.md) - General API documentation
+- [Development Error Handling](../development/error-handling.md) - Development error handling
+- [Authentication](authentication.md) - Authentication error handling
+- [Endpoints](endpoints.md) - Endpoint-specific error responses
+- [Rate Limiting](rate-limiting.md) - Rate limit error handling
+- [Logging Guide](../development/logging.md) - Error logging
 
 ## Overview
 

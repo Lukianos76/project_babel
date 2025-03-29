@@ -4,21 +4,37 @@
 _Describe the available API endpoints, their functionality, and usage guidelines._
 
 ## Scope
-_This document covers all API endpoints, request/response formats, and endpoint-specific behaviors._
+_This document covers API endpoints, request/response formats, and usage patterns._
 
 ## Dependencies
 - [api-overview.md](api-overview.md)
 - [authentication.md](authentication.md)
 - [error-handling.md](error-handling.md)
 - [rate-limiting.md](rate-limiting.md)
+- [caching.md](caching.md)
 
 ## See Also
-- [api-overview.md](api-overview.md) - General API documentation
-- [authentication.md](authentication.md) - Authentication implementation
-- [error-handling.md](error-handling.md) - Error handling
-- [rate-limiting.md](rate-limiting.md) - Rate limiting
 - [API Overview](api-overview.md) - General API documentation
-- [caching.md](caching.md) - Response caching
+- [Authentication](authentication.md) - Authentication implementation
+- [Error Handling](error-handling.md) - Error handling
+- [Rate Limiting](rate-limiting.md) - Rate limiting
+- [Caching](caching.md) - Response caching
+- [Translation Guide](../features/translation.md) - Translation endpoints
+- [User Management](../features/user.md) - User endpoints
+- [Mod Management](../features/mod.md) - Mod endpoints
+
+## Table of Contents
+- [Overview](#overview)
+- [Authentication Endpoints](#authentication-endpoints)
+- [Translation Endpoints](#translation-endpoints)
+- [Mod Endpoints](#mod-endpoints)
+- [Review Endpoints](#review-endpoints)
+- [Schemas](#schemas)
+- [Base URL](#base-url)
+- [Authentication](#authentication)
+- [Rate Limiting](#rate-limiting)
+- [Error Handling](#error-handling)
+- [Support](#support)
 
 ## Overview
 

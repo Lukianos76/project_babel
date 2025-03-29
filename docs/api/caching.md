@@ -10,13 +10,15 @@ _This document concerns the technical implementation of caching in the API._
 - [api-overview.md](api-overview.md)
 - [rate-limiting.md](rate-limiting.md)
 - [error-handling.md](error-handling.md)
+- [caching-strategy.md](../architecture/caching-strategy.md)
 
 ## See Also
-- [api-overview.md](api-overview.md) - API architecture
-- [rate-limiting.md](rate-limiting.md) - Rate limiting
-- [error-handling.md](error-handling.md) - Error handling
-- [caching-strategy.md](../architecture/caching-strategy.md) - Architectural caching decisions
 - [API Overview](api-overview.md) - General API documentation
+- [Rate Limiting](rate-limiting.md) - Rate limiting
+- [Error Handling](error-handling.md) - Error handling
+- [Caching Strategy](../architecture/caching-strategy.md) - Architectural caching decisions
+- [Performance Guide](../development/performance.md) - Performance optimization
+- [Monitoring Guide](../development/monitoring.md) - Cache monitoring
 
 ## Overview
 

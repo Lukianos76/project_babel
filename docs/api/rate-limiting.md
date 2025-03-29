@@ -14,12 +14,12 @@ _This document covers API rate limiting rules, quotas, and throttling mechanisms
 - [monitoring.md](../development/monitoring.md)
 
 ## See Also
-- [api-overview.md](api-overview.md) - API architecture
-- [authentication.md](authentication.md) - Authentication
-- [error-handling.md](error-handling.md) - Error handling
-- [caching.md](caching.md) - Caching strategies
-- [monitoring.md](../development/monitoring.md) - Rate limit monitoring
 - [API Overview](api-overview.md) - General API documentation
+- [Authentication](authentication.md) - Authentication
+- [Error Handling](error-handling.md) - Error handling
+- [Caching](caching.md) - Caching strategies
+- [Monitoring Guide](../development/monitoring.md) - Rate limit monitoring
+- [Performance Guide](../development/performance.md) - Performance optimization
 
 ## Overview
 

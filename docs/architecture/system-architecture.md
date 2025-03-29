@@ -7,28 +7,33 @@ _Describe the high-level system architecture and design principles of Project Ba
 _This document covers system components, their interactions, and architectural decisions._
 
 ## Dependencies
+- [project-overview.md](../overview/project-overview.md)
 - [component-architecture.md](component-architecture.md)
 - [database-schema.md](database-schema.md)
 - [security-architecture.md](security-architecture.md)
 
 ## See Also
-- [component-architecture.md](component-architecture.md) - Component architecture
-- [database-schema.md](database-schema.md) - Database schema
-- [security-architecture.md](security-architecture.md) - Security architecture
+- [Project Overview](../overview/project-overview.md) - Project overview and goals
+- [Component Architecture](component-architecture.md) - Detailed component design
+- [Database Schema](database-schema.md) - Data model and storage
+- [Security Architecture](security-architecture.md) - Security implementation
+- [Deployment Guide](../development/deployment.md) - Deployment architecture
+
+## Table of Contents
+- [Overview](#overview)
+- [System Flow](#system-flow)
+- [System Architecture](#system-architecture)
+- [Layer Architecture](#layer-architecture)
+- [Data Flow](#data-flow)
+- [Security](#security)
+- [Performance](#performance)
+- [Scalability](#scalability)
+- [Maintenance](#maintenance)
+- [Support](#support)
 
 ## Overview
 
 This document provides a high-level overview of the Project Babel system architecture, including its components, their interactions, and the architectural decisions that shape the system.
-
-## Table of Contents
-- [System Flow](#system-flow)
-- [System Architecture](#system-architecture)
-- [Component Overview](#component-overview)
-- [Data Flow](#data-flow)
-- [Integration Points](#integration-points)
-- [Scalability](#scalability)
-- [High Availability](#high-availability)
-- [Monitoring](#monitoring)
 
 ## System Flow
 

@@ -7,17 +7,15 @@ _Describe the authentication mechanisms and security protocols used in the Proje
 _This document covers API authentication methods, token management, and security protocols._
 
 ## Dependencies
-- [api-overview.md](api-overview.md)
-- [error-handling.md](error-handling.md)
-- [rate-limiting.md](rate-limiting.md)
 - [security.md](../development/security.md)
 - [security-architecture.md](../architecture/security-architecture.md)
+- [api-overview.md](api-overview.md)
 
 ## See Also
-- [security.md](../development/security.md) - Development security guidelines
-- [security-architecture.md](../architecture/security-architecture.md) - Security architecture details
-- [endpoints.md](endpoints.md) - Authentication endpoints documentation
 - [API Overview](api-overview.md) - General API documentation
+- [Endpoints](endpoints.md) - Authentication endpoints
+- [Error Handling](error-handling.md) - Authentication error handling
+- [Rate Limiting](rate-limiting.md) - Rate limiting for authenticated requests
 
 ## Overview
 

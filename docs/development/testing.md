@@ -1,38 +1,41 @@
 # Testing
 
 ## Purpose
-_Describe the testing strategies and guidelines for Project Babel._
+_Describe the testing strategies, methodologies, and tools used in Project Babel._
 
 ## Scope
-_This document covers all aspects of testing in the project, including unit tests, integration tests, and functional tests._
+_This document covers testing approaches, test types, and testing infrastructure._
 
 ## Dependencies
 - [code-structure.md](code-structure.md)
 - [error-handling.md](error-handling.md)
-- [security.md](security.md)
+- [performance.md](performance.md)
 
-## See also
-- [code-structure.md](code-structure.md) - Code organization
-- [error-handling.md](error-handling.md) - Error handling
-- [security.md](security.md) - Security guidelines
-- [performance.md](performance.md) - For performance testing guidelines
-- [code_review.md](code_review.md) - For code review process
-- [deployment.md](deployment.md) - For deployment testing
+## See Also
+- [Code Structure](code-structure.md) - Code organization
+- [Error Handling](error-handling.md) - Error handling
+- [Performance](performance.md) - Performance testing
+- [Deployment Guide](deployment.md) - Testing in deployment
+
+## Table of Contents
+- [Overview](#overview)
+- [Testing Strategy](#testing-strategy)
+- [Test Types](#test-types)
+- [Test Infrastructure](#test-infrastructure)
+- [Unit Testing](#unit-testing)
+- [Integration Testing](#integration-testing)
+- [End-to-End Testing](#end-to-end-testing)
+- [Performance Testing](#performance-testing)
+- [Security Testing](#security-testing)
+- [Test Data Management](#test-data-management)
+- [Continuous Testing](#continuous-testing)
+- [Test Reporting](#test-reporting)
+- [Best Practices](#best-practices)
+- [Support](#support)
 
 ## Overview
 
 This document outlines the testing strategy and guidelines for Project Babel, including different types of tests, testing tools, and best practices.
-
-## Table of Contents
-- [Test Types](#test-types)
-- [Test Organization](#test-organization)
-- [Testing Tools](#testing-tools)
-- [Test Coverage](#test-coverage)
-- [Testing Best Practices](#testing-best-practices)
-- [API Testing](#api-testing)
-- [Database Testing](#database-testing)
-- [Continuous Integration](#continuous-integration)
-- [Support](#support)
 
 ## Test Types
 
