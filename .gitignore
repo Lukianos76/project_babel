@@ -31,4 +31,19 @@
 /storage/uploads/
 /storage/cache/
 /storage/logs/
+/public/build/
+/var/cache/
+/var/log/
+/coverage/
+/phpunit.xml
 ###< Project specific ###
+
+###> Environment files ###
+.env
+.env.dev
+compose.override.yaml
+###< Environment files ###
+
+###> Dependencies ###
+/node_modules/
+###< Dependencies ###
