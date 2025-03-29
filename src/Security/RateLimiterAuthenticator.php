@@ -21,6 +21,8 @@ class RateLimiterAuthenticator extends AbstractAuthenticator implements Authenti
         return $request->attributes->get('_route') !== 'api_v1_auth_login' 
             && $request->attributes->get('_route') !== 'api_v1_auth_register'
             && $request->attributes->get('_route') !== 'api_v1_auth_refresh'
+            && $request->attributes->get('_route') !== 'api_v1_auth_forgot_password'
+            && $request->attributes->get('_route') !== 'api_v1_auth_reset_password'
             && str_starts_with($request->getPathInfo(), '/api/v1');
     }
 
