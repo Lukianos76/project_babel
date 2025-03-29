@@ -11,11 +11,15 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\RateLimiter\RateLimiterFactory;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use App\Service\RefreshTokenService;
+use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\RateLimiter\RateLimitStamp;
 
 #[Route('/auth', name: 'api_v1_auth_')]
 #[OA\Tag(
@@ -25,7 +29,11 @@ use App\Service\RefreshTokenService;
 class AuthController extends AbstractController
 {
     public function __construct(
-        private RefreshTokenService $refreshTokenService
+        private RefreshTokenService $refreshTokenService,
+        #[Autowire(service: 'login.limiter')]
+        private RateLimiterFactory $loginLimiter,
+        #[Autowire(service: 'register.limiter')]
+        private RateLimiterFactory $registerLimiter
     ) {
     }
 
@@ -75,6 +83,15 @@ class AuthController extends AbstractController
                     ],
                 ),
             ),
+            new OA\Response(
+                response: Response::HTTP_TOO_MANY_REQUESTS,
+                description: 'Too many registration attempts',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'error', type: 'string'),
+                    ],
+                ),
+            ),
         ],
     )]
     public function register(
@@ -84,6 +101,15 @@ class AuthController extends AbstractController
         ValidatorInterface $validator,
         UserRepository $userRepository
     ): JsonResponse {
+        // Apply rate limiting
+        $limiter = $this->registerLimiter->create($request->getClientIp());
+        if (false === $limiter->consume(1)->isAccepted()) {
+            return $this->json(
+                ['error' => 'Too many registration attempts. Please try again later.'],
+                Response::HTTP_TOO_MANY_REQUESTS
+            );
+        }
+
         $data = json_decode($request->getContent(), true);
         
         if (!isset($data['email']) || !isset($data['password'])) {
@@ -177,9 +203,11 @@ class AuthController extends AbstractController
         ],
         security: []
     )]
-    public function login(): void
+    public function login(): JsonResponse
     {
-        // This method can be empty - it will be intercepted by the JWT firewall
+        // This method will be intercepted by the security system
+        // The actual authentication is handled by the security system
+        return $this->json(['message' => 'Login successful']);
     }
 
     #[Route('/refresh', name: 'refresh', methods: ['POST'])]

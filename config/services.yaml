@@ -22,3 +22,42 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+    
+    # Rate limiter storage configuration
+    limiter.storage.login:
+        class: Symfony\Component\RateLimiter\Storage\CacheStorage
+        arguments:
+            $pool: '@cache.app'
+
+    limiter.storage.register:
+        class: Symfony\Component\RateLimiter\Storage\CacheStorage
+        arguments:
+            $pool: '@cache.app'
+
+    Symfony\Component\RateLimiter\Storage\StorageInterface: '@limiter.storage.login'
+
+    # Rate limiter services
+    login.limiter:
+        class: Symfony\Component\RateLimiter\RateLimiterFactory
+        arguments:
+            $config:
+                id: 'login'
+                policy: 'sliding_window'
+                limit: 5
+                interval: '1 minute'
+            $storage: '@limiter.storage.login'
+
+    register.limiter:
+        class: Symfony\Component\RateLimiter\RateLimiterFactory
+        arguments:
+            $config:
+                id: 'register'
+                policy: 'fixed_window'
+                limit: 3
+                interval: '1 hour'
+            $storage: '@limiter.storage.register'
+
+    # Event listener for login rate limiting
+    App\EventListener\LoginRateLimitListener:
+        tags:
+            - { name: kernel.event_listener, event: kernel.request, priority: 50 }

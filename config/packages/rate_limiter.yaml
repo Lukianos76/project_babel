@@ -1,0 +1,12 @@
+framework:
+    rate_limiter:
+        login:
+            policy: 'sliding_window'
+            limit: 5
+            interval: '1 minute'
+            storage_service: 'rate_limiter.storage.login'
+        register:
+            policy: 'fixed_window'
+            limit: 3
+            interval: '1 hour'
+            storage_service: 'rate_limiter.storage.register' 
