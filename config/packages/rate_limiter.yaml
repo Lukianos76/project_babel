@@ -9,4 +9,8 @@ framework:
             policy: 'fixed_window'
             limit: 3
             interval: '1 hour'
-            storage_service: 'rate_limiter.storage.register' 
+            storage_service: 'rate_limiter.storage.register'
+        api:
+            policy: 'fixed_window'
+            limit: 100
+            interval: '1 minute' 

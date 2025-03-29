@@ -15,17 +15,17 @@ security:
         api:
             pattern: ^/api/v1
             stateless: true
-            entry_point: App\Security\RateLimiterAuthenticator
+            provider: app_user_provider
+            entry_point: App\Security\JwtOrApiKeyAuthenticator
+            custom_authenticators:
+                - App\Security\RateLimiterAuthenticator
+                - App\Security\JwtOrApiKeyAuthenticator
             json_login:
                 check_path: api_v1_auth_login
                 username_path: email
                 password_path: password
                 success_handler: App\Security\CustomAuthenticationSuccessHandler
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
-            jwt: ~
-            provider: app_user_provider
-            custom_authenticators:
-                - App\Security\RateLimiterAuthenticator
 
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
@@ -37,6 +37,7 @@ security:
         - { path: ^/api/v1/auth/refresh, roles: PUBLIC_ACCESS }
         - { path: ^/api/v1/auth/forgot-password, roles: PUBLIC_ACCESS }
         - { path: ^/api/v1/auth/reset-password, roles: PUBLIC_ACCESS }
+        - { path: ^/api/v1/api-keys, roles: ROLE_ADMIN }
         - { path: ^/api/v1, roles: IS_AUTHENTICATED_FULLY }
 
 when@test:

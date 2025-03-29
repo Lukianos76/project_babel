@@ -23,6 +23,7 @@ nelmio_api_doc:
                         
                         This version includes:
                         - Basic authentication (JWT)
+                        - API Key authentication
                         - User registration
                         - User management
                         
@@ -30,9 +31,14 @@ nelmio_api_doc:
                         https://docs.projectbabel.org/api/v1
                 components:
                     securitySchemes:
-                        Bearer:
+                        bearerAuth:
                             type: http
                             scheme: bearer
                             bearerFormat: JWT
+                        apiKeyAuth:
+                            type: apiKey
+                            in: header
+                            name: X-API-Key
                     security:
-                        - Bearer: []
+                        - bearerAuth: []
+                        - apiKeyAuth: []

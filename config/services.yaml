@@ -34,6 +34,11 @@ services:
         arguments:
             $pool: '@cache.app'
 
+    limiter.storage.api:
+        class: Symfony\Component\RateLimiter\Storage\CacheStorage
+        arguments:
+            $pool: '@cache.app'
+
     Symfony\Component\RateLimiter\Storage\StorageInterface: '@limiter.storage.login'
 
     # Rate limiter services
@@ -57,7 +62,21 @@ services:
                 interval: '1 hour'
             $storage: '@limiter.storage.register'
 
+    api.limiter:
+        class: Symfony\Component\RateLimiter\RateLimiterFactory
+        arguments:
+            $config:
+                id: 'api'
+                policy: 'fixed_window'
+                limit: 100
+                interval: '1 minute'
+            $storage: '@limiter.storage.api'
+
     # Event listener for login rate limiting
     App\EventListener\LoginRateLimitListener:
         tags:
             - { name: kernel.event_listener, event: kernel.request, priority: 50 }
+
+    App\Security\RateLimiterAuthenticator:
+        arguments:
+            $limiter: '@api.limiter'
