@@ -74,6 +74,8 @@ graph TD
         Gateway[API Gateway]
         Auth[Auth Service]
         Cache[Cache Service]
+        APIv1[Symfony API (/api/v1)]
+        APIv2[Future API (/api/v2)]
     end
 
     subgraph Business Layer
@@ -88,8 +90,10 @@ graph TD
         Storage[(Storage)]
     end
 
-    Client --> Gateway
-    Admin --> Gateway
+    Client --> APIv1
+    Admin --> APIv1
+    APIv1 --> Gateway
+    APIv2 -.-> Gateway
 
     Gateway --> Auth
     Gateway --> Cache
@@ -122,6 +126,8 @@ graph TD
 - Authentication
 - Rate limiting
 - Validation
+- API versioning at routing level (/api/v1, /api/v2)
+- Parallel version coexistence support
 
 ### 3. Business Layer
 - Translation services
