@@ -9,6 +9,8 @@ use Ramsey\Uuid\Doctrine\UuidGenerator;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
@@ -34,9 +36,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
 
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: RefreshToken::class)]
+    private Collection $refreshTokens;
+
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
+        $this->refreshTokens = new ArrayCollection();
     }
 
     public function getId(): ?string
@@ -108,5 +114,32 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->createdAt;
+    }
+
+    /**
+     * @return Collection<int, RefreshToken>
+     */
+    public function getRefreshTokens(): Collection
+    {
+        return $this->refreshTokens;
+    }
+
+    public function addRefreshToken(RefreshToken $refreshToken): self
+    {
+        if (!$this->refreshTokens->contains($refreshToken)) {
+            $this->refreshTokens->add($refreshToken);
+            $refreshToken->setUser($this);
+        }
+        return $this;
+    }
+
+    public function removeRefreshToken(RefreshToken $refreshToken): self
+    {
+        if ($this->refreshTokens->removeElement($refreshToken)) {
+            if ($refreshToken->getUser() === $this) {
+                $refreshToken->setUser(null);
+            }
+        }
+        return $this;
     }
 } 

@@ -15,6 +15,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
+use App\Service\RefreshTokenService;
 
 #[Route('/auth', name: 'api_v1_auth_')]
 #[OA\Tag(
@@ -23,6 +24,11 @@ use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 )]
 class AuthController extends AbstractController
 {
+    public function __construct(
+        private RefreshTokenService $refreshTokenService
+    ) {
+    }
+
     #[Route('/register', name: 'register', methods: ['POST'])]
     #[OA\Post(
         path: '/api/v1/auth/register',
@@ -174,5 +180,60 @@ class AuthController extends AbstractController
     public function login(): void
     {
         // This method can be empty - it will be intercepted by the JWT firewall
+    }
+
+    #[Route('/refresh', name: 'refresh', methods: ['POST'])]
+    #[OA\Post(
+        path: '/api/v1/auth/refresh',
+        operationId: 'refreshTokenV1',
+        summary: 'Refresh access token using refresh token (v1)',
+        tags: ['Authentication'],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                properties: [
+                    new OA\Property(property: 'refresh_token', type: 'string'),
+                ],
+                required: ['refresh_token'],
+            ),
+        ),
+        responses: [
+            new OA\Response(
+                response: Response::HTTP_OK,
+                description: 'Tokens refreshed successfully',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'access_token', type: 'string'),
+                        new OA\Property(property: 'refresh_token', type: 'string'),
+                        new OA\Property(property: 'expires_in', type: 'integer'),
+                        new OA\Property(property: 'token_type', type: 'string'),
+                    ],
+                ),
+            ),
+            new OA\Response(
+                response: Response::HTTP_BAD_REQUEST,
+                description: 'Invalid refresh token',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'error', type: 'string'),
+                    ],
+                ),
+            ),
+        ],
+    )]
+    public function refresh(Request $request): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+        
+        if (!isset($data['refresh_token'])) {
+            return $this->json(['error' => 'Refresh token is required'], Response::HTTP_BAD_REQUEST);
+        }
+
+        try {
+            $tokens = $this->refreshTokenService->refreshTokens($data['refresh_token'], $request);
+            return $this->json($tokens);
+        } catch (\InvalidArgumentException $e) {
+            return $this->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
+        }
     }
 } 

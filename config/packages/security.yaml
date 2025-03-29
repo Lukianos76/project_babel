@@ -19,7 +19,7 @@ security:
                 check_path: api_v1_auth_login
                 username_path: email
                 password_path: password
-                success_handler: lexik_jwt_authentication.handler.authentication_success
+                success_handler: App\Security\CustomAuthenticationSuccessHandler
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
             jwt: ~
             provider: app_user_provider
@@ -31,6 +31,7 @@ security:
         - { path: ^/api/doc.json, roles: PUBLIC_ACCESS }
         - { path: ^/api/v1/auth/login, roles: PUBLIC_ACCESS }
         - { path: ^/api/v1/auth/register, roles: PUBLIC_ACCESS }
+        - { path: ^/api/v1/auth/refresh, roles: PUBLIC_ACCESS }
         - { path: ^/api/v1, roles: IS_AUTHENTICATED_FULLY }
 
 when@test:
