@@ -761,4 +761,3 @@ For information about error responses, see [error-handling.md](error-handling.md
 For API endpoint issues:
 - Check the [API Documentation](README.md)
 - Review the [Authentication](authentication.md) documentation
-- Contact support: api-support@projectbabel.org 

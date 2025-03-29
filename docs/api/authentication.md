@@ -79,6 +79,15 @@ sequenceDiagram
 - Token refresh
 - Token revocation
 
+### 3. Refresh Token Storage
+Each refresh token is stored with:
+- Associated user
+- Expiration date
+- IP address of the client
+- User-Agent string of the client
+
+These are used to identify misuse and allow manual revocation.
+
 ## Authentication Headers
 
 ### 1. Authorization Header
@@ -141,6 +150,108 @@ POST /api/v1/auth/refresh:
               token:
                 type: string
               expires_in:
+                type: integer
+```
+
+### 3. Register
+```yaml
+POST /api/v1/auth/register:
+  description: Register a new user account
+  parameters:
+    - name: email
+      type: string
+      required: true
+      format: email
+      description: User email address (must be unique)
+    - name: password
+      type: string
+      required: true
+      format: password
+      description: User password (minimum 8 characters, must contain at least one uppercase letter, one lowercase letter, one number and one special character)
+  responses:
+    201:
+      description: User registered successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              message:
+                type: string
+                example: "User registered successfully"
+              data:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                    description: Unique identifier of the created user
+                  email:
+                    type: string
+                    format: email
+                    description: Email address of the created user
+              timestamp:
+                type: integer
+                description: Unix timestamp of the response
+    400:
+      description: Invalid input
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              message:
+                type: string
+                example: "Email and password are required"
+              errors:
+                type: array
+                items:
+                  type: string
+              timestamp:
+                type: integer
+    409:
+      description: Email already exists
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              message:
+                type: string
+                example: "This email is already registered"
+              errors:
+                type: array
+                items:
+                  type: string
+              timestamp:
+                type: integer
+    429:
+      description: Too many registration attempts
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              message:
+                type: string
+                example: "Too many registration attempts. Please try again later."
+              errors:
+                type: array
+                items:
+                  type: string
+              timestamp:
                 type: integer
 ```
 

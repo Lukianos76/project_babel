@@ -1,7 +1,7 @@
 # Rate Limiting
 
 ## Purpose
-_Describe the rate limiting policies and implementation in the Project Babel API._
+_Define rate limiting policies and implementation for the Project Babel API._
 
 ## Scope
 _This document covers API rate limiting rules, quotas, and throttling mechanisms._
@@ -23,7 +23,19 @@ _This document covers API rate limiting rules, quotas, and throttling mechanisms
 
 ## Overview
 
-This document describes how rate limiting is implemented to protect the API from abuse.
+Rate limiting is implemented to protect the API from abuse and ensure fair usage. The system uses Symfony's RateLimiter component with a sliding window approach.
+
+## Authentication Endpoints
+
+### Login Rate Limiting
+- Max 5 attempts per minute per IP
+- Enforced via Symfony RateLimiter with sliding window
+- Returns 429 Too Many Requests when limit exceeded
+
+### Register Rate Limiting
+- Max 3 attempts per hour per IP
+- Enforced via Symfony RateLimiter with sliding window
+- Returns 429 Too Many Requests when limit exceeded
 
 ## Rate Limiting Strategy
 
@@ -92,43 +104,48 @@ endpoints:
 
 ## Implementation
 
-### 1. Rate Limiter Service
+Rate limiting is implemented using Symfony's RateLimiter component:
+
 ```php
-class RateLimiter
+#[Route('/auth/login')]
+public function login(Request $request): Response
 {
-    public function isAllowed(string $key, int $limit, int $period): bool
-    {
-        $current = $this->redis->incr($key);
-        
-        if ($current === 1) {
-            $this->redis->expire($key, $period);
-        }
-        
-        return $current <= $limit;
+    $limiter = $this->loginLimiter->create($request->getClientIp());
+    if (false === $limiter->consume(1)->isAccepted()) {
+        return $this->json(['error' => 'Too many login attempts'], Response::HTTP_TOO_MANY_REQUESTS);
     }
+    // ... rest of login logic
 }
 ```
 
-### 2. Rate Limit Middleware
-```php
-class RateLimitMiddleware
+## Response Format
+
+When rate limit is exceeded, the API returns:
+
+```json
 {
-    public function handle(Request $request, Closure $next): Response
-    {
-        $key = $this->getRateLimitKey($request);
-        $limit = $this->getRateLimit($request);
-        
-        if (!$this->rateLimiter->isAllowed($key, $limit, 60)) {
-            throw new RateLimitExceededException();
-        }
-        
-        $response = $next($request);
-        
-        $this->addRateLimitHeaders($response);
-        
-        return $response;
+  "success": false,
+  "error": {
+    "code": "RATE_LIMIT_EXCEEDED",
+    "message": "Too many attempts. Please try again later.",
+    "details": {
+      "retry_after": 60
     }
+  },
+  "meta": {
+    "timestamp": 1712001010
+  }
 }
+```
+
+## Headers
+
+Rate limit information is included in response headers:
+
+```
+X-RateLimit-Limit: 5
+X-RateLimit-Remaining: 3
+X-RateLimit-Reset: 1712001070
 ```
 
 ## Rate Limit Keys
@@ -246,19 +263,11 @@ X-RateLimit-Reset: 1616789012
 
 ## Best Practices
 
-### 1. Rate Limit Guidelines
-- Set appropriate limits
-- Use different limits for different endpoints
-- Consider user roles
-- Implement graceful degradation
-- Monitor and adjust limits
-
-### 2. Client Guidelines
-- Handle rate limit responses
-- Implement exponential backoff
-- Cache responses when possible
-- Use bulk operations
-- Monitor rate limit headers
+1. Implement exponential backoff in clients
+2. Cache rate limit headers
+3. Monitor rate limit hits
+4. Log suspicious activity
+5. Consider implementing IP whitelisting for trusted clients
 
 ## Rate Limit Exemptions
 
@@ -315,4 +324,3 @@ class UsageAnalytics
 For rate limiting issues:
 - Check the [API Documentation](README.md)
 - Review the [Error Handling](error-handling.md) documentation
-- Contact support: api-support@projectbabel.org 

@@ -264,4 +264,3 @@ class WriteThrough
 For caching issues:
 - Check the [API Documentation](README.md)
 - Review the [Error Handling](ERROR_HANDLING.md) documentation
-- Contact support: api-support@projectbabel.org 
