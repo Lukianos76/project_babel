@@ -6,6 +6,7 @@ use App\Entity\ApiKey;
 use App\Repository\ApiKeyRepository;
 use Lexik\Bundle\JWTAuthenticationBundle\Security\Authentication\Token\JWTUserToken;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
+use Lexik\Bundle\JWTAuthenticationBundle\TokenExtractor\TokenExtractorInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -26,6 +27,7 @@ class JwtOrApiKeyAuthenticator extends AbstractAuthenticator implements Authenti
     public function __construct(
         private readonly ApiKeyRepository $apiKeyRepository,
         private readonly JWTTokenManagerInterface $jwtManager,
+        private readonly TokenExtractorInterface $tokenExtractor,
         private readonly LoggerInterface $logger
     ) {
         $this->logger->info('JwtOrApiKeyAuthenticator initialized');
@@ -41,6 +43,22 @@ class JwtOrApiKeyAuthenticator extends AbstractAuthenticator implements Authenti
             'has_authorization' => $request->headers->has('Authorization'),
             'headers' => array_keys($request->headers->all()),
         ]);
+
+        // Check if this is a public endpoint
+        $publicEndpoints = [
+            'api_v1_auth_login',
+            'api_v1_auth_register',
+            'api_v1_auth_refresh',
+            'api_v1_auth_forgot_password',
+            'api_v1_auth_reset_password'
+        ];
+
+        if (in_array($request->attributes->get('_route'), $publicEndpoints)) {
+            $this->logger->debug('JwtOrApiKeyAuthenticator: Public endpoint detected, skipping authentication', [
+                'route' => $request->attributes->get('_route')
+            ]);
+            return false;
+        }
 
         $isApiRequest = str_starts_with($request->getPathInfo(), '/api/v1');
         $this->logger->debug('JwtOrApiKeyAuthenticator: Request support check', [
@@ -100,7 +118,7 @@ class JwtOrApiKeyAuthenticator extends AbstractAuthenticator implements Authenti
         // Si pas d'API Key, vérifier le JWT
         $this->logger->debug('JwtOrApiKeyAuthenticator: No API key found, trying JWT');
         try {
-            $token = $this->jwtManager->getTokenFromRequest($request);
+            $token = $this->tokenExtractor->extract($request);
             if (!$token) {
                 $this->logger->error('JwtOrApiKeyAuthenticator: No JWT token found in request');
                 throw new CustomUserMessageAuthenticationException('No JWT token found');

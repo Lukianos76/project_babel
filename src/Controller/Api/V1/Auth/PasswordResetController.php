@@ -16,6 +16,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Service\PasswordResetService;
 
 #[Route('/auth', name: 'api_v1_auth_')]
 #[OA\Tag(
@@ -25,10 +26,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class PasswordResetController extends ApiController
 {
     public function __construct(
-        private EntityManagerInterface $entityManager,
-        private UserRepository $userRepository,
-        private PasswordResetTokenRepository $tokenRepository,
-        private UserPasswordHasherInterface $passwordHasher
+        private readonly PasswordResetService $passwordResetService
     ) {
     }
 
@@ -177,34 +175,9 @@ class PasswordResetController extends ApiController
             return $this->apiErrorResponse('Email is required', Response::HTTP_BAD_REQUEST);
         }
 
-        $user = $this->userRepository->findOneBy(['email' => $email]);
-        
-        // Always return success even if user not found to prevent email enumeration
-        if (!$user) {
-            return $this->apiSuccessResponse(null, 'If the email exists, a password reset link has been sent');
-        }
+        $this->passwordResetService->requestReset($email);
 
-        // Create new token
-        $token = new PasswordResetToken();
-        $token->setUser($user);
-        $token->setExpiresAt(new \DateTimeImmutable('+1 hour'));
-        $token->setUsed(false);
-
-        $this->entityManager->persist($token);
-        $this->entityManager->flush();
-
-        // For development, log the token
-        file_put_contents(
-            __DIR__ . '/../../../../../var/log/password_reset_tokens.log',
-            sprintf(
-                "[%s] Reset token for user %s: %s\n",
-                date('Y-m-d H:i:s'),
-                $user->getEmail(),
-                $token->getToken()
-            ),
-            FILE_APPEND
-        );
-
+        // Always return success to prevent email enumeration
         return $this->apiSuccessResponse(null, 'If the email exists, a password reset link has been sent');
     }
 
@@ -361,22 +334,13 @@ class PasswordResetController extends ApiController
             return $this->apiErrorResponse('Token and password are required', Response::HTTP_BAD_REQUEST);
         }
 
-        $resetToken = $this->tokenRepository->findValidToken($token);
-
-        if (!$resetToken || !$resetToken->isValid()) {
-            return $this->apiErrorResponse('Invalid or expired token', Response::HTTP_BAD_REQUEST);
+        if (strlen($password) < 8) {
+            return $this->apiErrorResponse('Password must be at least 8 characters long', Response::HTTP_BAD_REQUEST);
         }
 
-        $user = $resetToken->getUser();
-        
-        // Hash and set new password
-        $hashedPassword = $this->passwordHasher->hashPassword($user, $password);
-        $user->setPassword($hashedPassword);
-
-        // Mark token as used
-        $resetToken->setUsed(true);
-
-        $this->entityManager->flush();
+        if (!$this->passwordResetService->resetPassword($token, $password)) {
+            return $this->apiErrorResponse('Invalid or expired token', Response::HTTP_BAD_REQUEST);
+        }
 
         return $this->apiSuccessResponse(null, 'Password has been reset successfully');
     }
