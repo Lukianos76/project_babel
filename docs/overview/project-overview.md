@@ -72,6 +72,20 @@ _This document covers the high-level overview of the project, its features, and 
 
 Project Babel is a powerful translation management system designed specifically for game mods and content. It provides a robust platform for managing translations, facilitating collaboration between translators, and ensuring high-quality localization across different languages.
 
+## Key Concepts
+
+### Mod
+
+A "mod" is the unit of content to be translated. It contains game files and metadata. Each mod can have multiple target translations, one per language.
+
+### Role System
+
+Project Babel supports:
+- Global roles: define what a user can do across the entire app.
+- Mod-level roles: define what a user can do within a specific translation project.
+
+This dual-role model allows flexibility for collaborative and community-driven translations.
+
 ### System Architecture
 ```mermaid
 graph TD

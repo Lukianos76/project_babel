@@ -10,6 +10,7 @@
 - [Caching Strategy](docs/architecture/caching-strategy.md)
 - [Security Architecture](docs/architecture/security-architecture.md)
 - [API Clients](docs/architecture/clients.md)
+- [Roles and Permissions](docs/architecture/roles.md)
 
 ## 🔌 API
 - [API Overview](docs/api/api-overview.md)
@@ -38,6 +39,7 @@
 - [Translation](docs/features/translation.md)
 - [Automatic Translation](docs/features/automatic-translation.md)
 - [Caching Strategy](docs/features/caching-strategy.md)
+- [Mods](docs/features/mods.md)
 
 ## 🚀 Deployment
 - [Deployment Guide](docs/deployment/deployment-guide.md)
