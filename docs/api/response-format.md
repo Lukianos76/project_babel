@@ -1,88 +1,145 @@
-# API Response Format
+# Format de réponse de l'API
 
-## Purpose
-_Define the standard response format for all Project Babel API endpoints._
+## Format de succès
 
-## Overview
-
-This document describes the standard response format used across all API endpoints. The format is designed to be consistent, predictable, and informative.
-
-## Success Response Format
-
-### Structure
 ```json
 {
-  "success": true,
-  "data": {
-    // Response data specific to the endpoint
-  },
-  "meta": {
-    "timestamp": 1712001010,
-    "pagination": {
-      "page": 1,
-      "limit": 10,
-      "total": 100
-    }
-  }
-}
-```
-
-### Fields
-- `success`: Boolean indicating the request was successful
-- `data`: Object containing the response data specific to the endpoint
-- `meta`: Object containing metadata about the response
-  - `timestamp`: Unix timestamp of the response
-  - `pagination`: Object containing pagination information (when applicable)
-    - `page`: Current page number
-    - `limit`: Number of items per page
-    - `total`: Total number of items
-
-## Error Response Format
-
-### Structure
-```json
-{
-  "success": false,
-  "error": {
-    "code": "AUTH_INVALID",
-    "message": "Invalid credentials",
-    "details": null
-  },
+  "data": { ... },
   "meta": {
     "timestamp": 1712001010
   }
 }
 ```
 
-### Fields
-- `success`: Boolean indicating the request failed
-- `error`: Object containing error information
-  - `code`: String identifier for the error type
-  - `message`: Human-readable error message
-  - `details`: Additional error details (optional)
-- `meta`: Object containing metadata about the response
-  - `timestamp`: Unix timestamp of the response
+### Description
+
+- `data` : Contient les données de la réponse. La structure varie selon l'endpoint.
+- `meta` : Contient les métadonnées de la réponse.
+  - `timestamp` : Timestamp Unix de la génération de la réponse.
+
+## Format d'erreur
+
+```json
+{
+  "error": {
+    "code": "AUTH_INVALID",
+    "message": "Invalid credentials",
+    "details": null
+  }
+}
+```
+
+### Description
+
+- `error` : Objet contenant les informations d'erreur.
+  - `code` : Code d'erreur unique pour l'identification programmatique de l'erreur.
+  - `message` : Message d'erreur lisible par l'utilisateur.
+  - `details` : Détails supplémentaires sur l'erreur (optionnel).
+
+## Utilisation
+
+Tous les endpoints de l'API retournent cette structure de réponse. Pour garantir cette cohérence, nous utilisons un listener d'exception personnalisé Symfony.
+
+### Implémentation avec Symfony
+
+```yaml
+# config/services.yaml
+services:
+    App\EventListener\ApiExceptionListener:
+        tags:
+            - { name: kernel.event_listener, event: kernel.exception }
+```
+
+```php
+<?php
+
+namespace App\EventListener;
+
+use Symfony\Component\HttpKernel\Event\ExceptionEvent;
+use Symfony\Component\HttpKernel\EventListener\ExceptionListener;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
+
+class ApiExceptionListener extends ExceptionListener
+{
+    public function onKernelException(ExceptionEvent $event): void
+    {
+        $exception = $event->getThrowable();
+        $response = new JsonResponse();
+
+        if ($exception instanceof HttpExceptionInterface) {
+            $response->setStatusCode($exception->getStatusCode());
+        } else {
+            $response->setStatusCode(500);
+        }
+
+        $response->setData([
+            'error' => [
+                'code' => $this->getErrorCode($exception),
+                'message' => $exception->getMessage(),
+                'details' => $this->getErrorDetails($exception)
+            ]
+        ]);
+
+        $event->setResponse($response);
+    }
+
+    private function getErrorCode(\Throwable $exception): string
+    {
+        // Mapping des exceptions vers les codes d'erreur
+        $codeMap = [
+            'InvalidCredentialsException' => 'AUTH_INVALID',
+            'TokenExpiredException' => 'AUTH_EXPIRED',
+            'AccessDeniedException' => 'AUTH_FORBIDDEN',
+            // ... autres mappings
+        ];
+
+        return $codeMap[get_class($exception)] ?? 'INTERNAL_ERROR';
+    }
+
+    private function getErrorDetails(\Throwable $exception): ?array
+    {
+        // Retourne des détails supplémentaires si disponibles
+        if (method_exists($exception, 'getDetails')) {
+            return $exception->getDetails();
+        }
+
+        return null;
+    }
+}
+```
+
+## Codes d'état HTTP
+
+- `200` : Succès
+- `201` : Création réussie
+- `400` : Requête invalide
+- `401` : Non authentifié
+- `403` : Non autorisé
+- `404` : Ressource non trouvée
+- `429` : Trop de requêtes
+- `500` : Erreur serveur interne
 
 ## Common Error Codes
 
-### Authentication Errors
-- `AUTH_INVALID`: Invalid credentials
-- `AUTH_EXPIRED`: Token has expired
-- `AUTH_REQUIRED`: Authentication required
-- `AUTH_FORBIDDEN`: Insufficient permissions
+### Erreurs d'authentification
+- `AUTH_INVALID` : Identifiants invalides
+- `AUTH_EXPIRED` : Token expiré
+- `AUTH_REQUIRED` : Authentification requise
+- `AUTH_FORBIDDEN` : Permissions insuffisantes
 
-### Validation Errors
-- `VALIDATION_ERROR`: Input validation failed
-- `INVALID_INPUT`: Invalid input data
-- `MISSING_REQUIRED`: Required field missing
+### Erreurs de validation
+- `VALIDATION_ERROR` : Échec de la validation des données
+- `INVALID_INPUT` : Données d'entrée invalides
+- `MISSING_REQUIRED` : Champ requis manquant
 
-### Resource Errors
-- `NOT_FOUND`: Resource not found
-- `ALREADY_EXISTS`: Resource already exists
-- `CONFLICT`: Resource conflict
+### Erreurs de ressources
+- `NOT_FOUND` : Ressource non trouvée
+- `ALREADY_EXISTS` : Ressource déjà existante
+- `CONFLICT` : Conflit de ressources
 
-### Rate Limiting
-- `RATE_LIMIT_EXCEEDED`: Too many requests
+### Limitation de débit
+- `RATE_LIMIT_EXCEEDED` : Trop de requêtes
 
 ## Examples
 
