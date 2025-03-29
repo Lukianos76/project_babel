@@ -1,0 +1,46 @@
+{
+  "documentation": {
+    "project-overview": "docs/overview/project-overview.md",
+    "api-overview": "docs/api/api-overview.md",
+    "auth": [
+      "docs/api/authentication.md",
+      "docs/development/security.md",
+      "docs/architecture/security-architecture.md",
+      "docs/architecture/roles.md"
+    ],
+    "users": [
+      "docs/features/user.md",
+      "docs/architecture/roles.md"
+    ],
+    "mods": [
+      "docs/features/mods.md",
+      "docs/architecture/clients.md"
+    ],
+    "translation": [
+      "docs/features/translation.md",
+      "docs/features/automatic-translation.md",
+      "docs/features/review.md",
+      "docs/architecture/roles.md"
+    ],
+    "endpoints": "docs/api/endpoints.md",
+    "errors": [
+      "docs/api/error-handling.md",
+      "docs/development/error-handling.md"
+    ],
+    "caching": [
+      "docs/api/caching.md",
+      "docs/architecture/caching-strategy.md",
+      "docs/features/caching-strategy.md"
+    ],
+    "testing": "docs/development/testing.md",
+    "database": "docs/architecture/database-schema.md",
+    "architecture": [
+      "docs/architecture/system-architecture.md",
+      "docs/architecture/component-architecture.md"
+    ],
+    "dev-guidelines": "DOCUMENTATION_GUIDELINES.md",
+    "contributing": "docs/development/contributing.md",
+    "roadmap": "ROADMAP.md",
+    "backlog": "BACKLOG.md"
+  }
+}

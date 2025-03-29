@@ -67,6 +67,7 @@ _This document covers the high-level overview of the project, its features, and 
 - [Contributing Guide](docs/development/contributing.md) - For contribution guidelines
 - [Translation Features](docs/features/translation.md) - For translation features
 - [Mod Management](docs/features/mod.md) - For mod management features
+- [Roles and Permissions](../architecture/roles.md) - User roles at global and mod level
 
 ## Overview
 
@@ -166,18 +167,11 @@ graph TD
 
 ### Backend
 - PHP 8.2
-- Laravel 10
+- Symfony 7
 - PostgreSQL 15
 - Redis 7
 - Elasticsearch 8
 - RabbitMQ
-
-### Frontend
-- Vue.js 3
-- TailwindCSS
-- TypeScript
-- WebSocket
-- PWA support
 
 ### Infrastructure
 - Docker
@@ -245,4 +239,3 @@ We welcome contributions! Please see our [Contributing Guide](docs/development/c
 For support, please:
 - Check the [documentation](../README.md)
 - Open an issue
-- Contact support: support@projectbabel.org 

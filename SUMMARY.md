@@ -3,6 +3,10 @@
 ## 🧠 Overview
 - [Project Overview](docs/overview/project-overview.md)
 
+## 📋 Project
+- [Roadmap](ROADMAP.md)
+- [Feature Backlog](BACKLOG.md)
+
 ## 🏗️ Architecture
 - [System Architecture](docs/architecture/system-architecture.md)
 - [Component Architecture](docs/architecture/component-architecture.md)
@@ -40,6 +44,8 @@
 - [Automatic Translation](docs/features/automatic-translation.md)
 - [Caching Strategy](docs/features/caching-strategy.md)
 - [Mods](docs/features/mods.md)
+- [User Management](docs/features/user.md)
+- [Review System](docs/features/review.md)
 
 ## 🚀 Deployment
 - [Deployment Guide](docs/deployment/deployment-guide.md)

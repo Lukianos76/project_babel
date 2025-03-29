@@ -1,4 +1,3 @@
-
 ###> symfony/framework-bundle ###
 /.env.local
 /.env.local.php
@@ -8,3 +7,28 @@
 /var/
 /vendor/
 ###< symfony/framework-bundle ###
+
+###> IDE files ###
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+###< IDE files ###
+
+###> Logs and databases ###
+*.log
+*.sql
+*.sqlite
+###< Logs and databases ###
+
+###> Cache and temporary files ###
+.cache/
+*.cache
+*.tmp
+###< Cache and temporary files ###
+
+###> Project specific ###
+/storage/uploads/
+/storage/cache/
+/storage/logs/
+###< Project specific ###

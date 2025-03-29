@@ -6,7 +6,7 @@ Project Babel is a Symfony-based application designed as a RESTful API with a mi
 It provides services for translation management, mod handling, and automated language processing.  
 There is no front-end website; the system is intended to be consumed by external clients or internal tools.
 
-![Documentation Status](https://img.shields.io/badge/docs-in%20progress-yellow)
+![Documentation Status](https://img.shields.io/badge/docs-complete-brightgreen)
 ![Test Status](https://img.shields.io/badge/tests-not%20started-red)
 ![Deployment Status](https://img.shields.io/badge/deployment-not%20deployed-red)
 ![License](https://img.shields.io/badge/license-GNU%20GPL%20v3-blue)
@@ -58,25 +58,22 @@ cd project-babel
 2. Install dependencies:
 ```bash
 composer install
-npm install
 ```
 
 3. Set up environment:
 ```bash
 cp .env.example .env
-php artisan key:generate
 ```
 
 4. Configure database:
 ```bash
-php artisan migrate
-php artisan db:seed
+php bin/console doctrine:database:create
+php bin/console doctrine:migrations:migrate
 ```
 
 5. Start development server:
 ```bash
-php artisan serve
-npm run dev
+symfony server:start
 ```
 
 ## 🛠️ Technology Stack
