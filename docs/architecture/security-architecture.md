@@ -57,17 +57,76 @@ graph TD
 
 ## Authentication
 
-### 1. User Authentication
-- JWT-based authentication
-- OAuth2 for third-party services
-- Multi-factor authentication
-- Session management
+### 1. User Authentication Flows
+```mermaid
+graph TD
+    subgraph Authentication Flows
+        direction TB
+        subgraph Registration
+            R1[Register] --> R2[Create User]
+            R2 --> R3[Generate Email Token]
+            R3 --> R4[Send Verification Email]
+            R4 --> R5[User Clicks Link]
+            R5 --> R6[Verify Email]
+        end
 
-### 2. Service Authentication
-- API key management
-- Service-to-service authentication
-- Certificate-based authentication
-- Token rotation
+        subgraph Login
+            L1[Login Request] --> L2[Rate Limit Check]
+            L2 --> L3[Validate Credentials]
+            L3 --> L4[Generate JWT]
+            L3 --> L5[Generate Refresh Token]
+            L4 --> L6[Return Tokens]
+            L5 --> L6
+        end
+
+        subgraph Password Reset
+            P1[Forgot Password] --> P2[Rate Limit Check]
+            P2 --> P3[Generate Reset Token]
+            P3 --> P4[Send Reset Email]
+            P4 --> P5[User Clicks Link]
+            P5 --> P6[Reset Password]
+        end
+
+        subgraph Token Management
+            T1[Refresh Token] --> T2[Validate Token]
+            T2 --> T3[Rotate Refresh Token]
+            T3 --> T4[Generate New JWT]
+            T3 --> T5[Revoke Old Token]
+        end
+    end
+```
+
+### 2. Token Types and Management
+- **JWT (Short-lived)**
+  - 15-minute validity
+  - Contains user claims and permissions
+  - Used for API authentication
+  - Stored in memory only
+
+- **Refresh Token**
+  - 7-day validity
+  - Stored securely in database
+  - Supports rotation (new token on use)
+  - Can be revoked per device
+
+- **API Key (Planned)**
+  - Long-lived service authentication
+  - Scoped to specific services
+  - Rate limiting per key
+  - Audit logging
+
+### 3. Rate Limiting
+- **Authentication Endpoints**
+  - Login: 5 attempts per minute
+  - Registration: 3 attempts per hour
+  - Password Reset: 3 attempts per hour
+  - Email Verification: 5 attempts per hour
+
+- **API Endpoints**
+  - Per-user rate limiting
+  - Per-IP rate limiting
+  - Service-specific quotas
+  - Burst protection
 
 ## Authorization
 
