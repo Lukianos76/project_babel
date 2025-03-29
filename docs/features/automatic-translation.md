@@ -1,5 +1,24 @@
 # Automatic Translation
 
+## Purpose
+_Describe the automatic translation features and integration with external translation services in Project Babel._
+
+## Scope
+_This document covers automatic translation workflows, service integration, and quality control._
+
+## Dependencies
+- [translation.md](translation.md)
+- [caching-strategy.md](caching-strategy.md)
+- [api-overview.md](../api/api-overview.md)
+- [endpoints.md](../api/endpoints.md)
+
+## See Also
+- [translation.md](translation.md) - General translation features
+- [endpoints.md](../api/endpoints.md) - Translation API endpoints
+- [api-overview.md](../api/api-overview.md) - General API documentation
+- [caching-strategy.md](caching-strategy.md) - Translation caching
+- [performance.md](../development/performance.md) - Performance considerations
+
 ## Overview
 
 Project Babel integrates with external translation services to provide initial automatic translations for new content. This feature helps speed up the translation process by providing a first draft that can then be reviewed and refined by human translators.

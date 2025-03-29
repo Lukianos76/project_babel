@@ -1,4 +1,20 @@
-# Getting Started with Project Babel
+# Getting Started
+
+## Purpose
+_Provide a guide for setting up and running Project Babel locally._
+
+## Scope
+_This document covers the initial setup, development environment, and basic workflows._
+
+## Dependencies
+- [code-structure.md](code-structure.md)
+- [testing.md](testing.md)
+- [security.md](security.md)
+
+## See Also
+- [code-structure.md](code-structure.md) - Code organization
+- [testing.md](testing.md) - Testing guidelines
+- [security.md](security.md) - Security guidelines
 
 ## Prerequisites
 

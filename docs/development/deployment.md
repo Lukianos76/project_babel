@@ -1,5 +1,21 @@
 # Deployment Guidelines
 
+## Purpose
+_Describe the deployment process, environment setup, and monitoring strategies for the application._
+
+## Scope
+_This document covers deployment procedures, environment configuration, and production monitoring._
+
+## Dependencies
+- [testing.md](testing.md)
+- [performance.md](performance.md)
+- [code-review.md](code-review.md)
+
+## See also
+- [testing.md](testing.md) - For deployment testing requirements
+- [performance.md](performance.md) - For performance monitoring
+- [code-review.md](code-review.md) - For deployment review process
+
 ## Overview
 
 This document outlines the deployment process and guidelines for Project Babel, including environment setup, deployment steps, and monitoring.
@@ -334,6 +350,6 @@ gunzip -c "$BACKUP_DIR/${BACKUP_FILE%.*}.sql.gz" | mysql -u user -p project_babe
 ## Support
 
 For deployment questions:
-- Check the [Development Guidelines](GUIDELINES.md)
-- Review the [Code Structure](CODE_STRUCTURE.md)
+- Check the [Development Guidelines](guidelines.md)
+- Review the [Code Structure](code-structure.md)
 - Contact the development team 

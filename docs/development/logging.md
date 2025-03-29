@@ -322,6 +322,6 @@ output {
 ## Support
 
 For logging questions:
-- Check the [Development Guidelines](GUIDELINES.md)
-- Review the [Code Structure](CODE_STRUCTURE.md)
+- Check the [Development Guidelines](guidelines.md)
+- Review the [Code Structure](code-structure.md)
 - Contact the development team 

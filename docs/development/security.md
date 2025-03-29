@@ -1,4 +1,20 @@
-# Security Guidelines
+# Security
+
+## Purpose
+_Describe the security practices and guidelines for development in Project Babel._
+
+## Scope
+_This document covers security best practices, authentication, authorization, and vulnerability management._
+
+## Dependencies
+- [security-architecture.md](../architecture/security-architecture.md)
+- [authentication.md](../api/authentication.md)
+- [error-handling.md](error-handling.md)
+
+## See Also
+- [security-architecture.md](../architecture/security-architecture.md) - Security architecture
+- [authentication.md](../api/authentication.md) - Authentication implementation
+- [error-handling.md](error-handling.md) - Error handling
 
 ## Overview
 
@@ -345,6 +361,6 @@ class SecurityIncidentHandler
 ## Support
 
 For security questions:
-- Check the [Development Guidelines](GUIDELINES.md)
-- Review the [Code Structure](CODE_STRUCTURE.md)
+- Check the [Development Guidelines](guidelines.md)
+- Review the [Code Structure](code-structure.md)
 - Contact the security team

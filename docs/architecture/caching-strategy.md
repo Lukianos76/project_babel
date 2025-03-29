@@ -1,7 +1,24 @@
 # Caching Strategy
 
+## Purpose
+_Describe the architectural caching strategy and implementation across Project Babel._
+
+## Scope
+_This document covers the internal caching layers, strategies, and implementation details._
+
+## Dependencies
+- [system-architecture.md](system-architecture.md)
+- [component-architecture.md](component-architecture.md)
+- [caching.md](../api/caching.md)
+
+## See Also
+- [system-architecture.md](system-architecture.md) - System architecture
+- [component-architecture.md](component-architecture.md) - Component architecture
+- [caching.md](../api/caching.md) - API caching implementation
+
 ## Overview
-This document outlines the caching strategy for Project Babel, including cache layers, invalidation rules, and performance optimization techniques.
+
+This document details the architectural strategy and layers of caching used internally within Project Babel. It describes the multi-level caching approach, including application-level caching, database caching, and distributed caching strategies. This document serves as the foundation for the API-level caching described in [caching.md](../api/caching.md), which focuses on how caching is exposed to API consumers.
 
 ## Cache Architecture
 

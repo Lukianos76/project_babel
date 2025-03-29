@@ -6,26 +6,26 @@ Project Babel provides a comprehensive REST API for managing translations, games
 
 ## Table of Contents
 
-1. [Authentication](AUTHENTICATION.md)
+1. [Authentication](authentication.md)
    - JWT Authentication
    - OAuth2 Integration
    - API Keys
    - Session Management
 
-2. [Endpoints](ENDPOINTS.md)
+2. [Endpoints](endpoints.md)
    - Translation Management
    - Game Management
    - Mod Management
    - User Management
    - File Management
 
-3. [Error Handling](ERROR_HANDLING.md)
+3. [Error Handling](error-handling.md)
    - Error Codes
    - Error Responses
    - Validation Errors
    - Authentication Errors
 
-4. [Rate Limiting](RATE_LIMITING.md)
+4. [Rate Limiting](rate-limiting.md)
    - Rate Limit Policies
    - Quota Management
    - Rate Limit Headers
@@ -38,7 +38,7 @@ https://api.projectbabel.org/v1
 
 ## Authentication
 
-All API requests require authentication. See the [Authentication](AUTHENTICATION.md) documentation for details.
+All API requests require authentication. See the [Authentication](authentication.md) documentation for details.
 
 ## Response Format
 
@@ -78,7 +78,7 @@ The API is versioned through the URL path. Current version: v1
 
 ## Rate Limiting
 
-API requests are subject to rate limiting. See the [Rate Limiting](RATE_LIMITING.md) documentation for details.
+API requests are subject to rate limiting. See the [Rate Limiting](rate-limiting.md) documentation for details.
 
 ## Support
 

@@ -1,5 +1,21 @@
 # Code Structure
 
+## Purpose
+_Describe the code organization and structure in Project Babel._
+
+## Scope
+_This document covers code organization, directory structure, and development patterns._
+
+## Dependencies
+- [system-architecture.md](../architecture/system-architecture.md)
+- [component-architecture.md](../architecture/component-architecture.md)
+- [testing.md](testing.md)
+
+## See Also
+- [system-architecture.md](../architecture/system-architecture.md) - System architecture
+- [component-architecture.md](../architecture/component-architecture.md) - Component architecture
+- [testing.md](testing.md) - Testing guidelines
+
 ## Overview
 
 This document outlines the code structure and organization of Project Babel. The project follows a modular architecture with clear separation of concerns.

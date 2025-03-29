@@ -1,8 +1,24 @@
-# Error Handling Guidelines
+# Error Handling
+
+## Purpose
+_Describe the internal error handling practices and development guidelines for Project Babel._
+
+## Scope
+_This document covers internal error handling, logging, and developer-specific concerns._
+
+## Dependencies
+- [code-structure.md](code-structure.md)
+- [logging.md](logging.md)
+- [error-handling.md](../api/error-handling.md)
+
+## See Also
+- [code-structure.md](code-structure.md) - Code organization
+- [logging.md](logging.md) - Logging guidelines
+- [error-handling.md](../api/error-handling.md) - API error handling
 
 ## Overview
 
-This document outlines the error handling strategy and guidelines for Project Babel, including exception handling, logging, and error reporting.
+This document describes the internal error handling practices and development guidelines for Project Babel. It focuses on backend concerns such as exception handling, logging strategies, monitoring, and developer-specific error management. This document complements the API error handling documentation in [error-handling.md](../api/error-handling.md), which covers client-facing error formats and HTTP status codes.
 
 ## Exception Handling
 
@@ -172,172 +188,3 @@ class ErrorResponse
     }
 }
 ```
-
-### 2. HTTP Status Codes
-
-```php
-class HttpStatusCodes
-{
-    public const BAD_REQUEST = 400;
-    public const UNAUTHORIZED = 401;
-    public const FORBIDDEN = 403;
-    public const NOT_FOUND = 404;
-    public const VALIDATION_ERROR = 422;
-    public const TOO_MANY_REQUESTS = 429;
-    public const INTERNAL_SERVER_ERROR = 500;
-    public const SERVICE_UNAVAILABLE = 503;
-}
-```
-
-### 3. Error Response Handler
-
-```php
-class ErrorResponseHandler
-{
-    public function handle(\Throwable $error): Response
-    {
-        $statusCode = $this->getStatusCode($error);
-        $response = $this->createErrorResponse($error);
-        
-        return new JsonResponse($response, $statusCode);
-    }
-}
-```
-
-## Error Recovery
-
-### 1. Retry Mechanism
-
-```php
-class RetryHandler
-{
-    public function retry(callable $operation, int $maxAttempts = 3): mixed
-    {
-        $attempts = 0;
-        $lastError = null;
-        
-        while ($attempts < $maxAttempts) {
-            try {
-                return $operation();
-            } catch (\Exception $e) {
-                $lastError = $e;
-                $attempts++;
-                
-                if ($attempts < $maxAttempts) {
-                    sleep(pow(2, $attempts)); // Exponential backoff
-                }
-            }
-        }
-        
-        throw $lastError;
-    }
-}
-```
-
-### 2. Fallback Mechanism
-
-```php
-class FallbackHandler
-{
-    public function withFallback(callable $operation, callable $fallback): mixed
-    {
-        try {
-            return $operation();
-        } catch (\Exception $e) {
-            return $fallback($e);
-        }
-    }
-}
-```
-
-### 3. Circuit Breaker
-
-```php
-class CircuitBreaker
-{
-    private int $failureCount = 0;
-    private bool $isOpen = false;
-    
-    public function execute(callable $operation): mixed
-    {
-        if ($this->isOpen) {
-            throw new CircuitBreakerOpenException();
-        }
-        
-        try {
-            $result = $operation();
-            $this->reset();
-            return $result;
-        } catch (\Exception $e) {
-            $this->recordFailure();
-            throw $e;
-        }
-    }
-}
-```
-
-## Error Monitoring
-
-### 1. Error Tracking
-
-```php
-class ErrorTracker
-{
-    public function track(\Throwable $error): void
-    {
-        $this->metrics->increment('error_count', [
-            'type' => get_class($error),
-            'environment' => $this->kernel->getEnvironment()
-        ]);
-        
-        $this->logger->error('Error tracked', [
-            'error' => $error->getMessage(),
-            'context' => $this->getErrorContext($error)
-        ]);
-    }
-}
-```
-
-### 2. Error Reporting
-
-```php
-class ErrorReporter
-{
-    public function report(\Throwable $error): void
-    {
-        if ($this->shouldReport($error)) {
-            $this->sendToErrorReportingService([
-                'error' => $error->getMessage(),
-                'file' => $error->getFile(),
-                'line' => $error->getLine(),
-                'trace' => $error->getTraceAsString(),
-                'context' => $this->getErrorContext($error)
-            ]);
-        }
-    }
-}
-```
-
-### 3. Error Analytics
-
-```php
-class ErrorAnalytics
-{
-    public function analyze(): array
-    {
-        return [
-            'error_rate' => $this->getErrorRate(),
-            'error_types' => $this->getErrorTypes(),
-            'error_trends' => $this->getErrorTrends(),
-            'affected_users' => $this->getAffectedUsers()
-        ];
-    }
-}
-```
-
-## Support
-
-For error handling questions:
-- Check the [Development Guidelines](GUIDELINES.md)
-- Review the [Code Structure](CODE_STRUCTURE.md)
-- Contact the development team 

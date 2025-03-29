@@ -292,6 +292,6 @@ Brief description of the release
 ## Support
 
 For release questions:
-- Check the [Development Guidelines](GUIDELINES.md)
-- Review the [Code Structure](CODE_STRUCTURE.md)
+- Check the [Development Guidelines](guidelines.md)
+- Review the [Code Structure](code-structure.md)
 - Contact the development team 

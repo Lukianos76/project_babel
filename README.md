@@ -1,116 +1,114 @@
 # Project Babel
 
-## Overview
+![Documentation Status](https://img.shields.io/badge/docs-in%20progress-yellow)
+![Test Status](https://img.shields.io/badge/tests-not%20started-red)
+![Deployment Status](https://img.shields.io/badge/deployment-not%20deployed-red)
+![License](https://img.shields.io/badge/license-GNU%20GPL%20v3-blue)
 
-Project Babel is a Symfony-based API for managing and translating localization files for video game mods. It provides a robust platform for handling translations, managing games and mods, and facilitating collaboration between translators.
+A powerful translation management system for game mods and content.
 
-## Documentation
+## 📚 Technical Documentation Overview
 
-### Getting Started
-- [Development Setup](docs/development/GETTING_STARTED.md)
-- [Development Guidelines](docs/development/GUIDELINES.md)
-- [Testing Guide](docs/development/TESTING.md)
-- [Code Review Process](docs/development/CODE_REVIEW.md)
-- [Contributing Guide](docs/development/CONTRIBUTING.md)
-- [Release Process](docs/development/RELEASE_PROCESS.md)
+### 🧠 Overview
+- [Project Overview](docs/overview/project-overview.md)
+- [Getting Started](docs/overview/getting-started.md)
+- [Contributing](docs/overview/contributing.md)
 
-### Architecture
-- [System Architecture](docs/architecture/SYSTEM_ARCHITECTURE.md)
-- [Component Architecture](docs/architecture/COMPONENT_ARCHITECTURE.md)
-- [Security Architecture](docs/architecture/SECURITY_ARCHITECTURE.md)
-- [Caching Strategy](docs/architecture/CACHING_STRATEGY.md)
+### 🧱 Architecture
+- [System Architecture](docs/architecture/system-architecture.md)
+- [Component Architecture](docs/architecture/component-architecture.md)
+- [Security Architecture](docs/architecture/security-architecture.md)
+- [Database Schema](docs/architecture/database-schema.md)
 
-### API
-- [API Documentation](docs/api/README.md)
-- [Authentication](docs/api/AUTHENTICATION.md)
-- [Endpoints](docs/api/ENDPOINTS.md)
-- [Error Handling](docs/api/ERROR_HANDLING.md)
-- [Rate Limiting](docs/api/RATE_LIMITING.md)
+### 🔌 API
+- [API Overview](docs/api/api-overview.md)
+- [Endpoints](docs/api/endpoints.md)
+- [Authentication](docs/api/authentication.md)
+- [Error Handling](docs/api/error-handling.md)
+- [Rate Limiting](docs/api/rate-limiting.md)
+- [Caching](docs/api/caching.md)
 
-### Features
-- [Translation Management](docs/features/TRANSLATION.md)
-- [Automatic Translation](docs/features/AUTOMATIC_TRANSLATION.md)
+### 🧑‍💻 Development
+- [Development Setup](docs/development/setup.md)
+- [Testing](docs/development/testing.md)
+- [Performance](docs/development/performance.md)
+- [Code Review](docs/development/code-review.md)
+- [Deployment](docs/development/deployment.md)
 
-### Deployment
-- [Deployment Guide](docs/deployment/DEPLOYMENT.md)
-- [Environment Setup](docs/deployment/ENVIRONMENT.md)
-- [Monitoring](docs/deployment/MONITORING.md)
-- [Backup Strategy](docs/deployment/BACKUP.md)
+### 🌍 Features
+- [Translation Management](docs/features/translation.md)
+- [Mod Management](docs/features/mod.md)
+- [User Management](docs/features/user.md)
+- [Review System](docs/features/review.md)
 
-## Quick Start
+## 🚀 Quick Start
 
-### Prerequisites
-- PHP 8.2 or higher
-- Composer 2.0 or higher
-- Docker and Docker Compose
-- Git
-- Node.js 18 or higher (for frontend development)
-
-### Installation
-
+1. Clone the repository:
 ```bash
-# Clone the repository
-git clone https://github.com/your-org/project-babel.git
+git clone https://github.com/yourusername/project-babel.git
 cd project-babel
-
-# Install dependencies
-composer install
-
-# Copy environment file
-cp .env.example .env
-
-# Start Docker containers
-docker-compose up -d
-
-# Run migrations
-php bin/console doctrine:migrations:migrate
 ```
 
-### Development Server
-
+2. Install dependencies:
 ```bash
-# Start Symfony development server
-symfony server:start
-
-# Or use PHP's built-in server
-php -S localhost:8000 -t public/
+composer install
+npm install
 ```
 
-## Features
+3. Set up environment:
+```bash
+cp .env.example .env
+php artisan key:generate
+```
 
-### Translation Management
-- Multi-language support with automatic initial translation
-- Human review workflow with quality control
-- Translation memory and glossary management
-- Support for multiple file formats (JSON, YAML, INI, PO/MO)
-- Real-time collaboration tools
-- Version control for translations
+4. Configure database:
+```bash
+php artisan migrate
+php artisan db:seed
+```
 
-### Integration
-- Game and mod integration
-- File parsing and validation
-- Real-time updates
-- Caching system
-- API rate limiting
-- Security features
+5. Start development server:
+```bash
+php artisan serve
+npm run dev
+```
 
-### Translation Services
-- DeepL integration for high-quality translations
-- Google Translate support for wide language coverage
-- Microsoft Translator for enterprise needs
-- Custom translation provider support
+## 🛠️ Technology Stack
 
-## Contributing
+- **Backend**: PHP 8.2, Laravel 10
+- **Frontend**: Vue.js 3, TailwindCSS
+- **Database**: PostgreSQL 15
+- **Cache**: Redis 7
+- **Search**: Elasticsearch 8
+- **Queue**: RabbitMQ
+- **Monitoring**: Prometheus, Grafana
 
-We welcome contributions! Please see our [Contributing Guide](docs/development/CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
+## 📦 Requirements
 
-## License
+- PHP 8.2 or higher
+- Node.js 18 or higher
+- PostgreSQL 15 or higher
+- Redis 7 or higher
+- Composer 2
+- npm 9
 
-This project is licensed under the GNU General Public License v3.0 - see the [LICENSE](LICENSE) file for details.
+## 🤝 Contributing
 
-## Support
+Please read our [Contributing Guide](docs/overview/contributing.md) for details on our code of conduct and the process for submitting pull requests.
 
-- Documentation: [Project Documentation](docs/README.md)
-- Issues: [GitHub Issues](https://github.com/your-org/project-babel/issues)
-- Community: [Discord Server](https://discord.gg/project-babel)
-- Email: support@projectbabel.org 
+## 📄 License
+
+This project is licensed under the GNU GPL v3 License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- Laravel Framework
+- Vue.js Team
+- All contributors and maintainers
+
+## 📞 Support
+
+For support, please:
+- Check the [documentation](docs/overview/project-overview.md)
+- Open an issue
+- Contact support: support@projectbabel.org 
