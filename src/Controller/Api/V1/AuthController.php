@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Api\V1;
 
 use App\Entity\User;
 use App\Repository\UserRepository;
@@ -16,15 +16,18 @@ use Symfony\Component\Security\Http\Attribute\CurrentUser;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 
-#[Route('/api', name: 'api_')]
-#[OA\Tag(name: 'Authentication')]
+#[Route('/auth', name: 'api_v1_auth_')]
+#[OA\Tag(
+    name: 'Authentication',
+    description: 'Authentication endpoints for Project Babel API v1'
+)]
 class AuthController extends AbstractController
 {
     #[Route('/register', name: 'register', methods: ['POST'])]
     #[OA\Post(
-        path: '/api/register',
-        operationId: 'registerUser',
-        summary: 'Register a new user',
+        path: '/api/v1/auth/register',
+        operationId: 'registerUserV1',
+        summary: 'Register a new user (v1)',
         tags: ['Authentication'],
         requestBody: new OA\RequestBody(
             required: true,
@@ -116,5 +119,60 @@ class AuthController extends AbstractController
             'id' => $user->getId(),
             'email' => $user->getEmail()
         ], Response::HTTP_CREATED);
+    }
+
+    #[Route('/login', name: 'login', methods: ['POST'])]
+    #[OA\Post(
+        path: '/api/v1/auth/login',
+        operationId: 'loginUserV1',
+        summary: 'Login user and get JWT token (v1)',
+        tags: ['Authentication'],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                properties: [
+                    new OA\Property(property: 'email', type: 'string', format: 'email'),
+                    new OA\Property(property: 'password', type: 'string', format: 'password'),
+                ],
+                required: ['email', 'password'],
+            ),
+        ),
+        responses: [
+            new OA\Response(
+                response: Response::HTTP_OK,
+                description: 'Login successful',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'token', type: 'string', description: 'JWT token'),
+                        new OA\Property(property: 'refresh_token', type: 'string', description: 'Refresh token for getting new access tokens'),
+                        new OA\Property(property: 'expires_in', type: 'integer', description: 'Token expiration time in seconds'),
+                        new OA\Property(property: 'token_type', type: 'string', description: 'Token type (Bearer)'),
+                    ],
+                ),
+            ),
+            new OA\Response(
+                response: Response::HTTP_UNAUTHORIZED,
+                description: 'Invalid credentials',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'error', type: 'string'),
+                    ],
+                ),
+            ),
+            new OA\Response(
+                response: Response::HTTP_TOO_MANY_REQUESTS,
+                description: 'Too many login attempts',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'error', type: 'string'),
+                    ],
+                ),
+            ),
+        ],
+        security: []
+    )]
+    public function login(): void
+    {
+        // This method can be empty - it will be intercepted by the JWT firewall
     }
 } 

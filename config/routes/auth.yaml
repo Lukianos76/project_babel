@@ -1,9 +1,9 @@
-api_login_check:
-    path: /api/login
-    controller: App\Controller\AuthController::login
+api_v1_auth_login:
+    path: /api/v1/auth/login
+    controller: App\Controller\Api\V1\AuthController::login
     methods: ['POST']
 
-api_register:
-    path: /api/register
-    controller: App\Controller\AuthController::register
+api_v1_auth_register:
+    path: /api/v1/auth/register
+    controller: App\Controller\Api\V1\AuthController::register
     methods: ['POST'] 
