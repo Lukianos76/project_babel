@@ -1,4 +1,4 @@
-# 📚 Documentation du Projet Babel
+# 📚 Project Babel Documentation
 
 ## 🧠 Overview
 - [Project Overview](docs/overview/project-overview.md)
@@ -7,8 +7,9 @@
 - [System Architecture](docs/architecture/system-architecture.md)
 - [Component Architecture](docs/architecture/component-architecture.md)
 - [Database Schema](docs/architecture/database-schema.md)
-- [Security Architecture](docs/architecture/security-architecture.md)
 - [Caching Strategy](docs/architecture/caching-strategy.md)
+- [Security Architecture](docs/architecture/security-architecture.md)
+- [API Clients](docs/architecture/clients.md)
 
 ## 🔌 API
 - [API Overview](docs/api/api-overview.md)
@@ -18,7 +19,7 @@
 - [Rate Limiting](docs/api/rate-limiting.md)
 - [Caching](docs/api/caching.md)
 
-## 🧑‍💻 Développement
+## 🧑‍💻 Development
 - [Getting Started](docs/development/getting-started.md)
 - [Code Structure](docs/development/code-structure.md)
 - [Development Guidelines](docs/development/guidelines.md)
@@ -33,12 +34,12 @@
 - [Deployment](docs/development/deployment.md)
 - [Release Process](docs/development/release-process.md)
 
-## 🌍 Fonctionnalités
+## 🌍 Features
 - [Translation](docs/features/translation.md)
 - [Automatic Translation](docs/features/automatic-translation.md)
 - [Caching Strategy](docs/features/caching-strategy.md)
 
-## 🚀 Déploiement
-- [Guide de Déploiement](docs/deployment/deployment-guide.md)
+## 🚀 Deployment
+- [Deployment Guide](docs/deployment/deployment-guide.md)
 - [Configuration](docs/deployment/configuration.md)
 - [Monitoring](docs/deployment/monitoring.md) 

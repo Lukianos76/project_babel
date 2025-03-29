@@ -1,5 +1,11 @@
 # Project Babel
 
+## About the Project
+
+Project Babel is a Symfony-based application designed as a RESTful API with a minimal administrative interface.  
+It provides services for translation management, mod handling, and automated language processing.  
+There is no front-end website; the system is intended to be consumed by external clients or internal tools.
+
 ![Documentation Status](https://img.shields.io/badge/docs-in%20progress-yellow)
 ![Test Status](https://img.shields.io/badge/tests-not%20started-red)
 ![Deployment Status](https://img.shields.io/badge/deployment-not%20deployed-red)
@@ -75,22 +81,22 @@ npm run dev
 
 ## 🛠️ Technology Stack
 
-- **Backend**: PHP 8.2, Laravel 10
-- **Frontend**: Vue.js 3, TailwindCSS
+- **Framework**: Symfony 7
+- **PHP**: 8.2 or higher
 - **Database**: PostgreSQL 15
 - **Cache**: Redis 7
 - **Search**: Elasticsearch 8
 - **Queue**: RabbitMQ
 - **Monitoring**: Prometheus, Grafana
+- **Admin Interface**: Symfony UX with minimal JavaScript
 
 ## 📦 Requirements
 
 - PHP 8.2 or higher
-- Node.js 18 or higher
 - PostgreSQL 15 or higher
 - Redis 7 or higher
 - Composer 2
-- npm 9
+- Symfony CLI
 
 ## 🤝 Contributing
 
@@ -99,16 +105,3 @@ Please read our [Contributing Guide](docs/overview/contributing.md) for details 
 ## 📄 License
 
 This project is licensed under the GNU GPL v3 License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- Laravel Framework
-- Vue.js Team
-- All contributors and maintainers
-
-## 📞 Support
-
-For support, please:
-- Check the [documentation](docs/overview/project-overview.md)
-- Open an issue
-- Contact support: support@projectbabel.org 

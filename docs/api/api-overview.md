@@ -1,25 +1,35 @@
 # API Overview
 
 ## Purpose
-_Describe the overall API structure, endpoints, and integration guidelines for Project Babel._
+_Describe the API architecture and implementation in Project Babel._
 
 ## Scope
-_This document covers the API architecture, endpoints, authentication, and integration patterns._
+_This document covers API design, endpoints, authentication, and integration._
 
 ## Dependencies
+- [../architecture/system-architecture.md](../architecture/system-architecture.md)
+- [../architecture/component-architecture.md](../architecture/component-architecture.md)
+- [../architecture/clients.md](../architecture/clients.md)
 - [authentication.md](authentication.md)
-- [error-handling.md](error-handling.md)
+- [endpoints.md](endpoints.md)
 - [rate-limiting.md](rate-limiting.md)
+- [error-handling.md](error-handling.md)
+- [caching.md](caching.md)
 
 ## See Also
-- [endpoints.md](endpoints.md) - Detailed API endpoint documentation
-- [caching.md](caching.md) - API caching strategies
-- [error-handling.md](error-handling.md) - API error handling patterns
-- [system-architecture.md](../architecture/system-architecture.md) - System architecture
-- [component-architecture.md](../architecture/component-architecture.md) - Component design
-- [security-architecture.md](../architecture/security-architecture.md) - Security implementation
+- [System Architecture](../architecture/system-architecture.md) - Overall system design
+- [Component Architecture](../architecture/component-architecture.md) - Component interactions
+- [API Clients](../architecture/clients.md) - Client architecture and integration
+- [Authentication Guide](authentication.md) - Authentication implementation
+- [Endpoints Guide](endpoints.md) - Available API endpoints
+- [Rate Limiting](rate-limiting.md) - API rate limiting
+- [Error Handling](error-handling.md) - Error responses
+- [Caching](caching.md) - Response caching
 
 ## Overview
+Project Babel exposes a full-featured REST API with no public frontend.  
+All interactions are performed via API clients, CLI tools, or admin interfaces.  
+The system is designed for integration with external systems (e.g. game platforms, localization workflows).
 
 The API is designed to provide a robust and scalable interface for the translation system.
 

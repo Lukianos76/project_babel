@@ -11,11 +11,15 @@ _This document covers security protocols, authentication, authorization, and dat
 - [component-architecture.md](component-architecture.md)
 - [database-schema.md](database-schema.md)
 - [security.md](../development/security.md)
+- [clients.md](clients.md)
+- [../api/authentication.md](../api/authentication.md)
 
 ## See Also
 - [system-architecture.md](system-architecture.md) - System security overview
 - [component-architecture.md](component-architecture.md) - Security components
 - [database-schema.md](database-schema.md) - Data security
+- [API Clients](clients.md) - Client security and authentication
+- [Authentication Guide](../api/authentication.md) - Authentication implementation
 
 ## Overview
 

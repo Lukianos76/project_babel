@@ -11,12 +11,14 @@ _This document covers system components, their interactions, and architectural d
 - [component-architecture.md](component-architecture.md)
 - [database-schema.md](database-schema.md)
 - [security-architecture.md](security-architecture.md)
+- [clients.md](clients.md)
 
 ## See Also
 - [Project Overview](../overview/project-overview.md) - Project overview and goals
 - [Component Architecture](component-architecture.md) - Detailed component design
 - [Database Schema](database-schema.md) - Data model and storage
 - [Security Architecture](security-architecture.md) - Security implementation
+- [API Clients](clients.md) - Client architecture and integration
 - [Deployment Guide](../development/deployment.md) - Deployment architecture
 
 ## Table of Contents
@@ -39,15 +41,13 @@ This document provides a high-level overview of the Project Babel system archite
 
 ```mermaid
 sequenceDiagram
-    participant User
-    participant Frontend
+    participant Client
     participant APIGateway
     participant Service
     participant DB
     participant Cache
 
-    User->>Frontend: Send request
-    Frontend->>APIGateway: Forward request
+    Client->>APIGateway: Send request
     APIGateway->>Service: Execute logic
     Service->>Cache: Check cache
     alt Cache hit
@@ -58,26 +58,16 @@ sequenceDiagram
         Service->>Cache: Update cache
     end
     Service-->>APIGateway: Return response
-    APIGateway-->>Frontend: Forward response
-    Frontend-->>User: Display result
-```
-
-```mermaid
-sequenceDiagram
-  User->>Frontend: Request
-  Frontend->>API Gateway: Call API
-  API Gateway->>Service: Handle logic
-  Service-->>Database: Query
+    APIGateway-->>Client: Return result
 ```
 
 ## System Architecture
 
 ```mermaid
 graph TD
-    subgraph Client Layer
-        Web[Web Client]
-        Mobile[Mobile App]
-        Desktop[Desktop App]
+    subgraph External Layer
+        Client[API Client]
+        Admin[Admin Interface]
     end
 
     subgraph API Layer
@@ -98,9 +88,8 @@ graph TD
         Storage[(Storage)]
     end
 
-    Web --> Gateway
-    Mobile --> Gateway
-    Desktop --> Gateway
+    Client --> Gateway
+    Admin --> Gateway
 
     Gateway --> Auth
     Gateway --> Cache
@@ -122,11 +111,11 @@ graph TD
 
 ## Layer Architecture
 
-### 1. Client Layer
-- Web, mobile and desktop applications
-- User interface
-- Session management
-- Local cache
+### 1. External Layer
+- API clients
+- Admin interface
+- Authentication
+- Rate limiting
 
 ### 2. API Layer
 - Gateway for routing
@@ -151,7 +140,7 @@ graph TD
 ### 1. Translation Flow
 ```mermaid
 sequenceDiagram
-    participant C as Client
+    participant C as API Client
     participant G as Gateway
     participant T as Translation
     participant M as Memory
@@ -172,7 +161,7 @@ sequenceDiagram
 ### 2. Mod Management Flow
 ```mermaid
 sequenceDiagram
-    participant C as Client
+    participant C as API Client
     participant G as Gateway
     participant M as Mod Service
     participant T as Translation

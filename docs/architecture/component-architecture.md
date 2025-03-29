@@ -11,11 +11,13 @@ _This document covers component relationships, dependencies, and internal commun
 - [database-schema.md](database-schema.md)
 - [security-architecture.md](security-architecture.md)
 - [code-structure.md](../development/code-structure.md)
+- [clients.md](clients.md)
 
 ## See Also
 - [system-architecture.md](system-architecture.md) - System architecture
 - [database-schema.md](database-schema.md) - Database schema
 - [security-architecture.md](security-architecture.md) - Security architecture
+- [API Clients](clients.md) - Client architecture and integration
 
 ## Overview
 
@@ -25,7 +27,7 @@ This document describes the component-level architecture of Project Babel, detai
 
 ```mermaid
 graph TD
-  Frontend --> API
+  Client --> API
   API --> AuthService
   API --> TranslationService
   API --> Database
@@ -35,9 +37,9 @@ graph TD
 
 ```mermaid
 graph LR
-    subgraph Frontend
-        UI[User Interface]
-        API_Client[API Client]
+    subgraph External
+        Client[API Client]
+        Admin[Admin Interface]
     end
 
     subgraph Backend
@@ -54,8 +56,8 @@ graph LR
         DB[(Database)]
     end
 
-    UI --> API_Client
-    API_Client --> API
+    Client --> API
+    Admin --> API
     API --> Service
     Service --> Parser
     Service --> Entity
@@ -67,19 +69,19 @@ graph LR
 
 ## Component Details
 
-### 1. Frontend Components
-
-#### User Interface
-- React-based SPA
-- Component-based architecture
-- State management with Redux
-- Real-time updates via Mercure
+### 1. External Components
 
 #### API Client
-- Axios for HTTP requests
-- Request/response interceptors
+- RESTful API consumption
+- Authentication handling
+- Rate limiting
 - Error handling
-- Authentication management
+
+#### Admin Interface
+- Technical management interface
+- System monitoring
+- Configuration management
+- Debug tools
 
 ### 2. Backend Components
 
@@ -139,21 +141,21 @@ graph LR
 ### Data Flow
 ```mermaid
 sequenceDiagram
-    participant User
+    participant Client
     participant API
     participant Service
     participant Parser
     participant DB
     participant Cache
 
-    User->>API: Upload File
+    Client->>API: Upload File
     API->>Service: Process File
     Service->>Parser: Parse Content
     Parser-->>Service: Parsed Data
     Service->>DB: Store Data
     Service->>Cache: Cache Results
     Service-->>API: Response
-    API-->>User: Result
+    API-->>Client: Result
 ```
 
 ## Design Patterns
@@ -179,7 +181,7 @@ sequenceDiagram
 - Implements event-driven architecture
 
 ## Directory Structure
-For detailed information about the code organization, see the [Code Structure](../development/CODE_STRUCTURE.md) documentation.
+For detailed information about the code organization, see the [Code Structure](../development/code-structure.md) documentation.
 
 ## Core Components
 
@@ -248,223 +250,101 @@ graph TD
     subgraph Game
         GM[Game Manager] --> Info[Game Info]
         GM --> Mods[Mod Management]
-        GM --> Files[File System]
+        GM --> Trans[Translation]
         
         Info --> Meta[Metadata]
-        Info --> Stats[Statistics]
         Info --> Config[Configuration]
         
-        Mods --> List[Mod List]
-        Mods --> Dep[Dependencies]
-        Mods --> Ver[Versions]
+        Mods --> Upload[Upload]
+        Mods --> Process[Processing]
+        Mods --> Store[Storage]
         
-        Files --> Store[Storage]
-        Files --> Sync[Synchronization]
-        Files --> Backup[Backup]
+        Trans --> Auto[Automatic]
+        Trans --> Manual[Manual]
+        Trans --> Review[Review]
     end
 ```
 
 #### Game Manager
-- Game registration
-- Mod management
-- File handling
-- Configuration
-
-#### Game Information
-- Metadata management
-- Statistics tracking
-- Configuration handling
+- Game information management
+- Mod handling
+- Translation coordination
 - Version control
+
+#### Game Info
+- Metadata management
+- Configuration handling
+- Version tracking
+- Dependency management
 
 #### Mod Management
-- Mod listing
-- Dependency handling
-- Version control
-- Compatibility checks
-
-#### File System
+- Upload handling
+- Processing pipeline
 - Storage management
-- File synchronization
-- Backup handling
-- Access control
+- Version control
 
-### User Component
+#### Translation
+- Automatic translation
+- Manual translation
+- Review process
+- Quality control
 
-```mermaid
-graph TD
-    subgraph User
-        UM[User Manager] --> Auth[Authentication]
-        UM --> Prof[Profile]
-        UM --> Perm[Permissions]
-        
-        Auth --> JWT[JWT Handler]
-        Auth --> OAuth[OAuth2]
-        Auth --> Key[API Keys]
-        
-        Prof --> Info[User Info]
-        Prof --> Prefs[Preferences]
-        Prof --> Stats[Statistics]
-        
-        Perm --> Roles[Role System]
-        Perm --> Access[Access Control]
-        Perm --> Audit[Audit Log]
-    end
-```
+## Error Handling
 
-#### User Manager
-- User registration
-- Profile management
-- Permission control
-- Activity tracking
+### 1. API Errors
+- Standardized error responses
+- Error codes and messages
+- Validation errors
+- Rate limit errors
 
-#### Authentication
-- JWT handling
-- OAuth2 integration
-- API key management
-- Session control
+### 2. Service Errors
+- Exception handling
+- Error logging
+- Recovery procedures
+- Alerting system
 
-#### Profile Management
-- User information
-- Preferences
-- Statistics
-- Activity history
+### 3. External Errors
+- Integration failures
+- Timeout handling
+- Retry mechanisms
+- Fallback options
 
-#### Permission System
-- Role management
-- Access control
-- Audit logging
-- Policy enforcement
+## Performance Considerations
 
-## Component Interactions
+### 1. Caching
+- Response caching
+- Query caching
+- File caching
+- Cache invalidation
 
-### Translation Flow
+### 2. Optimization
+- Query optimization
+- Resource pooling
+- Connection management
+- Load balancing
 
-```mermaid
-sequenceDiagram
-    participant User
-    participant Game
-    participant Translation
-    participant Storage
-    
-    User->>Game: Submit Content
-    Game->>Translation: Request Translation
-    Translation->>Storage: Get Existing Translations
-    Storage-->>Translation: Return Translations
-    Translation->>Translation: Automatic Translation
-    Translation->>Translation: Quality Check
-    Translation->>Storage: Store Translation
-    Storage-->>Translation: Confirm Storage
-    Translation-->>Game: Return Translation
-    Game-->>User: Show Translation
-```
-
-### Game Integration
-
-```mermaid
-sequenceDiagram
-    participant User
-    participant Game
-    participant Translation
-    participant Mod
-    
-    User->>Game: Register Game
-    Game->>Mod: Scan Mods
-    Mod->>Translation: Get Translations
-    Translation-->>Mod: Return Translations
-    Mod-->>Game: Update Mod Info
-    Game-->>User: Show Game Status
-```
-
-## Dependencies
-
-### External Dependencies
-- Translation APIs
-- Game APIs
-- Storage Services
-- Authentication Services
-
-### Internal Dependencies
-- Database Access
-- Cache System
-- Event System
-- Message Queue
-
-## Testing Strategy
-
-### Unit Testing
-- Component isolation
-- Interface testing
-- Mock dependencies
-- Edge cases
-
-### Integration Testing
-- Component interaction
-- API integration
-- Database integration
-- Cache integration
-
-### Performance Testing
-- Load testing
-- Stress testing
-- Scalability testing
-- Resource monitoring
-
-## Monitoring
-
-### Metrics
-- Component health
+### 3. Monitoring
 - Performance metrics
+- Resource usage
+- Response times
 - Error rates
-- Usage statistics
 
-### Logging
-- Component logs
-- Error logs
-- Audit logs
-- Performance logs
+## Security Measures
 
-### Alerts
-- Health alerts
-- Performance alerts
-- Error alerts
-- Security alerts
+### 1. Authentication
+- JWT implementation
+- API key management
+- Session handling
+- Token validation
 
-## Security
-
-### Authentication
-- Component authentication
-- API authentication
-- Service authentication
-- Token management
-
-### Authorization
-- Access control
-- Permission checks
+### 2. Authorization
+- Role-based access
+- Permission management
 - Resource protection
 - Audit logging
 
-### Data Protection
-- Data encryption
+### 3. Data Protection
+- Input validation
+- Output sanitization
+- Encryption
 - Secure storage
-- Secure transmission
-- Access logging
-
-## Future Improvements
-
-### Component Enhancements
-- New features
-- Performance optimization
-- Security improvements
-- Monitoring enhancements
-
-### Integration Improvements
-- New integrations
-- API enhancements
-- Service improvements
-- Tool integration
-
-### Testing Improvements
-- Test coverage
-- Test automation
-- Performance testing
-- Security testing
