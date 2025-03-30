@@ -41,7 +41,6 @@
 ###> Environment files ###
 .env
 .env.dev
-compose.override.yaml
 ###< Environment files ###
 
 ###> Dependencies ###
